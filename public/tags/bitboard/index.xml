@@ -6,11 +6,11 @@
     <description>Recent content in bitboard on Nereuxofficials Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Sep 2021 22:19:48 +0200</lastBuildDate><atom:link href="/tags/bitboard/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate><atom:link href="/tags/bitboard/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Writing a BitBoard in Rust</title>
       <link>/posts/bitboard-rust/</link>
-      <pubDate>Sun, 12 Sep 2021 22:19:48 +0200</pubDate>
+      <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
       
       <guid>/posts/bitboard-rust/</guid>
       <description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
