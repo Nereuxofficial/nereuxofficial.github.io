@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>python on Nereuxofficials Blog</title>
+    <link>/tags/python/</link>
+    <description>Recent content in python on Nereuxofficials Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 12 Sep 2021 21:31:55 +0200</lastBuildDate><atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Lichess Elite Analysis</title>
+      <link>/posts/lichess-elite-analysis/</link>
+      <pubDate>Sun, 12 Sep 2021 21:31:55 +0200</pubDate>
+      
+      <guid>/posts/lichess-elite-analysis/</guid>
+      <description>You can check out the source code
+I used the Lichess Elite Database, which only contains players over 2400 playing against opponents rated higher than 2200 and analyzed the latest version available using Python.
+Top Openings These are the most commonly played openings in the dataset:
+ Indian Game, played 12941 times Modern Defense, played 11642 times Sicilian Defense: Closed, played 10625 times Pirc Defense, played 8924 times Queen&amp;rsquo;s Pawn Game, played 7588 times Caro-Kann Defense, played 6089 times Trompowsky Attack, played 6088 times Benoni Defense: Old Benoni, played 5759 times King&amp;rsquo;s Indian Attack, played 5684 times Queen&amp;rsquo;s Pawn Game: Mason Variation, played 5514 times Sicilian Defense, played 5445 times Horwitz Defense, played 5181 times Zukertort Opening: Sicilian Invitation, played 4965 times Sicilian Defense: Najdorf Variation, played 4935 times Queen&amp;rsquo;s Pawn Game: London System, played 4298 times Queen&amp;rsquo;s Pawn Game: Zukertort Variation, played 4278 times Sicilian Defense: Alapin Variation, played 4076 times Nimzo-Larsen Attack: Classical Variation, played 4049 times Sicilian Defense: Old Sicilian, played 4032 times Modern Defense: Standard Defense, played 4000 times  </description>
+      <content>&lt;p&gt;You can check out &lt;a href=&#34;TODO&#34;&gt;the source code&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I used &lt;a href=&#34;https://database.nikonoel.fr/&#34;&gt;the Lichess Elite Database&lt;/a&gt;, which only contains players over 2400 playing
+against opponents rated higher than 2200 and analyzed the latest version available using Python.&lt;/p&gt;
+&lt;h2 id=&#34;top-openings&#34;&gt;Top Openings&lt;/h2&gt;
+&lt;p&gt;These are the most commonly played openings in the dataset:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Indian Game, played 12941 times&lt;/li&gt;
+&lt;li&gt;Modern Defense, played 11642 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Closed, played 10625 times&lt;/li&gt;
+&lt;li&gt;Pirc Defense, played 8924 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game, played 7588 times&lt;/li&gt;
+&lt;li&gt;Caro-Kann Defense, played 6089 times&lt;/li&gt;
+&lt;li&gt;Trompowsky Attack, played 6088 times&lt;/li&gt;
+&lt;li&gt;Benoni Defense: Old Benoni, played 5759 times&lt;/li&gt;
+&lt;li&gt;King&amp;rsquo;s Indian Attack, played 5684 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game: Mason Variation, played 5514 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense, played 5445 times&lt;/li&gt;
+&lt;li&gt;Horwitz Defense, played 5181 times&lt;/li&gt;
+&lt;li&gt;Zukertort Opening: Sicilian Invitation, played 4965 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Najdorf Variation, played 4935 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game: London System, played 4298 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game: Zukertort Variation, played 4278 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Alapin Variation, played 4076 times&lt;/li&gt;
+&lt;li&gt;Nimzo-Larsen Attack: Classical Variation, played 4049 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Old Sicilian, played 4032 times&lt;/li&gt;
+&lt;li&gt;Modern Defense: Standard Defense, played 4000 times&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>

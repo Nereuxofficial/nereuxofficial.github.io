@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>cargo on Nereuxofficials Blog</title><link>/tags/cargo/</link><description>Recent content in cargo on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 12 Sep 2021 21:31:55 +0200</lastBuildDate><atom:link href="/tags/cargo/index.xml" rel="self" type="application/rss+xml"/><item><title>Cargo Plugins</title><link>/posts/cargo-plugins/</link><pubDate>Sun, 12 Sep 2021 21:31:55 +0200</pubDate><guid>/posts/cargo-plugins/</guid><description>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):
+1. clippy Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common mistakes that can be found in Rust code.
+For example in this code:
+fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increase_vec(vector: &amp;amp;Vec&amp;lt;u32&amp;gt;) -&amp;gt; Vec&amp;lt;u32&amp;gt; { vector.</description><content>&lt;p>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p>
+&lt;h2 id="1-clippyhttpsgithubcomrust-langrust-clippy">1. &lt;a href="https://github.com/rust-lang/rust-clippy">clippy&lt;/a>&lt;/h2>
+&lt;p>Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common
+mistakes that can be found in Rust code.&lt;/p>
+&lt;p>For example in this code:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#66d9ef">let&lt;/span> vec &lt;span style="color:#f92672">=&lt;/span> vec&lt;span style="color:#f92672">!&lt;/span>[&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>];
+increase_vec(&lt;span style="color:#f92672">&amp;amp;&lt;/span>vec);
+}
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">increase_vec&lt;/span>(vector: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>) -&amp;gt; Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span> {
+vector.iter().map(&lt;span style="color:#f92672">|&lt;/span>v&lt;span style="color:#f92672">|&lt;/span> v &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>).collect()
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The default compiler gives no warnings at all. However, using &lt;code>cargo clippy&lt;/code> in the projects' directory gives us the
+following tip:
+&lt;a href="https://rust-lang.github.io/rust-clippy/master/index.html#ptr_arg">&lt;img src="./images/clippy_output.png" alt="Clippy Output">&lt;/a>&lt;/p>
+&lt;p>So we can replace the vector with a reference to an array which is faster since it uses one reference less.&lt;/p>
+&lt;p>Installing Clippy is very easy:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rustup update
+rustup component add clippy
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And we can run it using: &lt;code>cargo clippy&lt;/code>&lt;/p>
+&lt;h2 id="2-cargo-checkmatehttpsgithubcomnathan-at-leastcargo-checkmate">2. &lt;a href="https://github.com/nathan-at-least/cargo-checkmate">cargo-checkmate&lt;/a>&lt;/h2>
+&lt;p>This plugin bundles a bunch of other plugins together.
+It first performs a &lt;code>cargo check&lt;/code>, compares the current formatting with the one of &lt;code>cargo fmt&lt;/code>, checks if
+&lt;code>cargo build&lt;/code> passes, checks if tests pass, then checks if the docs compile and lastly runs &lt;code>cargo audit&lt;/code> to check for
+vulnerabilities in dependencies.&lt;/p>
+&lt;p>An output will probably look something like this:
+&lt;a href="https://github.com/nathan-at-least/cargo-checkmate">&lt;img src="./images/checkmate-output.jpg" alt="Checkmate Output">&lt;/a>&lt;/p>
+&lt;p>You can install it via:
+&lt;code>cargo install cargo-checkmate&lt;/code>&lt;/p>
+&lt;p>And to use it run:
+&lt;code>cargo checkmate&lt;/code>&lt;/p>
+&lt;p>And to execute it on every commit execute:
+&lt;code>cargo checkmate git-hook install&lt;/code>
+in the project folder.&lt;/p>
+&lt;h2 id="3-cargo-flamegraphhttpslibrscratesflamegraph">3. &lt;a href="https://lib.rs/crates/flamegraph">cargo flamegraph&lt;/a>&lt;/h2>
+&lt;p>Cargo flamegraph generates a so-called &amp;ldquo;flamegraph&amp;rdquo; of your program. It generates a graph which shows where execution
+time is being spent in your program. This way it can help you figure out what to optimize in order to get better
+performance out of your program.&lt;/p>
+&lt;p>By default, flamegraph will use the release output which is fine for most cases, however in order to get more
+information we can add&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">profile&lt;/span>.&lt;span style="color:#a6e22e">release&lt;/span>]
+&lt;span style="color:#a6e22e">debug&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>to our Cargo.toml.&lt;/p>
+&lt;p>To use it properly on Linux we either have to run it as root or lower &lt;code>perf_event_paranoid&lt;/code>(Which may not fit your security
+needs):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is what a graph looks like, from the example of &lt;a href="https://github.com/K4rakara/freshfetch">freshfetch&lt;/a>:
+&lt;a href="https://github.com/K4rakara/freshfetch">&lt;img src="./images/flamegraph_freshfetch.svg" alt="Checkmate Output">&lt;/a>&lt;/p>
+&lt;h2 id="4-honggfuzz-rshttpsgithubcomrust-fuzzhonggfuzz-rs">4. &lt;a href="https://github.com/rust-fuzz/honggfuzz-rs">honggfuzz-rs&lt;/a>&lt;/h2>
+&lt;p>Fuzzing has become very important in software security and stability nowadays. This fuzzer, developed by Google, is
+probably one of the best available.&lt;/p>
+&lt;p>We install it by using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo install honggfuzz
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add it to project dependencies using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;span style="color:#a6e22e">honggfuzz&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.5&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a target to fuzz:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">extern&lt;/span> &lt;span style="color:#66d9ef">crate&lt;/span> url;
+&lt;span style="color:#66d9ef">use&lt;/span> honggfuzz::fuzz;
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(){
+println(&lt;span style="color:#e6db74">&amp;#34;Starting fuzzer...&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">loop&lt;/span>{
+fuzz&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#f92672">|&lt;/span>data: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>[&lt;span style="color:#66d9ef">u8&lt;/span>]&lt;span style="color:#f92672">|&lt;/span> {
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#66d9ef">let&lt;/span> Ok(s) &lt;span style="color:#f92672">=&lt;/span> std::&lt;span style="color:#66d9ef">str&lt;/span>::from_utf8(data) {
+&lt;span style="color:#66d9ef">let&lt;/span> _ &lt;span style="color:#f92672">=&lt;/span> url::Url::parse(s);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now if we run:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo hfuzz run TARGET &lt;span style="color:#75715e"># TARGET is typically the crate name, but it depends&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We see a terminal like this:
+&lt;a href="https://honggfuzz.dev/">&lt;img src="../images/honggfuzz.png" alt="Honggfuzz Output">&lt;/a>&lt;/p>
+&lt;p>While it&amp;rsquo;s running we see a hfuzz_workspace directory, which has TARGET directory, where we can find
+the found unique crashes, along with a honggfuzz report, which contains details on how it crashed.&lt;/p>
+&lt;h2 id="5-cargo-updatehttpsgithubcomnabijaczlewelicargo-update">5. &lt;a href="https://github.com/nabijaczleweli/cargo-update">cargo-update&lt;/a>&lt;/h2>
+&lt;p>This Plugin is used to update all the binaries we just installed.&lt;/p>
+&lt;p>Install it by using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo install cargo-update
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And update binaries using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo install-update -a
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It would probably also make sense to make it a Pacman hook(or something similar on other Linux distros).&lt;/p>
+&lt;p>&lt;a href="https://gist.github.com/Nereuxofficial/3375a8c02a2e13a51ff24206f8fd6f46">Here is mine&lt;/a>, though you need to replace the
+[USER] with your username.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>There are obviously many Plugins I haven&amp;rsquo;t mentioned that are very useful too, for example
+&lt;a href="https://github.com/bheisler/cargo-criterion">cargo-criterion&lt;/a>, which is useful for benchmarks or
+&lt;a href="https://github.com/kbknapp/cargo-outdated">cargo-outdated&lt;/a>, which helps you keep your dependencies up to date.&lt;/p>
+&lt;p>But I hope at least some of them were useful to you and made your workflow a bit easier.&lt;/p></content></item></channel></rss>

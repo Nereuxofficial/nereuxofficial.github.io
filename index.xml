@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nereuxofficials Blog</title><link>/</link><description>Recent content on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 12 Sep 2021 22:19:48 +0200</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Writing a BitBoard in Rust</title><link>/posts/bitboard-rust/</link><pubDate>Sun, 12 Sep 2021 22:19:48 +0200</pubDate><guid>/posts/bitboard-rust/</guid><description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
+Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.
+Memory The second reason to use BitBoards is because they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description><content>&lt;h2 id="why-bitboards">Why BitBoards?&lt;/h2>
+&lt;p>BitBoards are used in most successful chess engines for the following reasons:&lt;/p>
+&lt;h3 id="speed">Speed&lt;/h3>
+&lt;p>The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
+Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.&lt;/p>
+&lt;h3 id="memory">Memory&lt;/h3>
+&lt;p>The second reason to use BitBoards is because they are the most efficient way to store a board,
+which becomes relevant for the search in chess engines, since many boards are in memory during search.&lt;/p>
+&lt;p>But if you just want to make a chess browser game where memory or speed is not of great concern you really don&amp;rsquo;t need BitBoards.&lt;/p>
+&lt;h2 id="explanation">Explanation&lt;/h2>
+&lt;p>A BitBoard is essentially a 64-bit number with 1 bit for every square of a chess board.&lt;/p>
+&lt;p>Obviously we can only discern between piece and no piece here, so we have to have multiple BitBoards to store both teams
+and all 6 pieces.&lt;/p>
+&lt;p>So a position that looks like this:
+&lt;a href="https://lichess.org/editor/8/8/4r3/3k4/8/8/3K1Q2/8_w_-_-_0_1">&lt;img src="./images/chess_position_1.jpg" alt="8/8/4r3/3k4/8/8/3K1Q2/8 w - - 0 1">&lt;/a>&lt;/p>
+&lt;p>Would be split into the following BitBoards:&lt;/p>
+&lt;p>Note that a 0 is represented with nothing and a 1 is represented with a black dot and the dark and light squares are also all just bits but this makes it easier to read.&lt;/p>
+&lt;h3 id="white-pieces">White Pieces&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_pieces_0.png" alt="">&lt;/p>
+&lt;h3 id="black-pieces">Black Pieces&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_pieces_1.png" alt="">&lt;/p>
+&lt;h3 id="white-queens">White Queens&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_white_queens.png" alt="">&lt;/p>
+&lt;h3 id="white-kings">White Kings&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_white_kings.jpg" alt="">&lt;/p>
+&lt;p>There would also be another BitBoard for Black Kings, Black Rooks and a bunch of empty BitBoards for the pieces which are not present on this board, but I think you get the concept.&lt;/p>
+&lt;h2 id="implementation">Implementation&lt;/h2>
+&lt;p>So creating a BitBoard is pretty easy:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">BitBoard&lt;/span>(&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">u64&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can derive a bunch of traits:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#75715e">#[derive(PartialEq, Eq, PartialOrd, Clone, Copy, Debug, Default, Hash)]&lt;/span>
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">BitBoard&lt;/span>(&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">u64&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can represent a chess board using BitBoards:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span>
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Position&lt;/span>{
+&lt;span style="color:#e6db74">/// Board for each side
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> bb_sides: [BitBoard; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;span style="color:#75715e">// BitBoards for all pieces and each side
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> bb_pieces: [[BitBoard; &lt;span style="color:#ae81ff">6&lt;/span>]; &lt;span style="color:#ae81ff">2&lt;/span>],
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>For efficiency reasons we only store the position and not the move order etc. since that is irrelevant for evaluation.&lt;/p>
+&lt;p>For ease of use we should also &amp;ldquo;label&amp;rdquo; the BitBoards something&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Sides&lt;/span>;
+&lt;span style="color:#66d9ef">impl&lt;/span> Sides {
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+}
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Pieces&lt;/span>;
+&lt;span style="color:#66d9ef">impl&lt;/span> Pieces{
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> PAWN: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BISHOP: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> KNIGHT: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> ROOK: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> QUEEN: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">4&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> KING: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">5&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can access a specific BitBoard in a way that is easy to read:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> white_queens: &lt;span style="color:#a6e22e">BitBoard&lt;/span> &lt;span style="color:#f92672">=&lt;/span> position.bb_pieces[Sides::WHITE][Pieces::QUEEN];
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post we will explore how to implement States(Like En Passant, Side to Move, Move number etc.).
+If you read this far, thank you for your patience and the next post will follow soon.&lt;/p>
+&lt;p>And of course you can check out the entire &lt;a href="https://github.com/Nereuxofficial/BitBoard">source code&lt;/a>.&lt;/p>
+&lt;h2 id="credits-and-further-reading">Credits and further reading&lt;/h2>
+&lt;p>Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p>
+&lt;ul>
+&lt;li>the &lt;a href="https://www.chessprogramming.org/Bitboards">Chess Programming Wiki&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://rustic-chess.org/">rustic project&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://github.com/peterellisjones/rust_move_gen">rust-move-gen&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>About</title><link>/about/</link><pubDate>Sun, 12 Sep 2021 22:08:05 +0200</pubDate><guid>/about/</guid><description>About Me Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on Github
+Contact me Via Email: nereux@tuta.io</description><content>&lt;h2 id="about-me">About Me&lt;/h2>
+&lt;p>Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on &lt;a href="https://github.com/Nereuxofficial">Github&lt;/a>&lt;/p>
+&lt;h3 id="contact-me">Contact me&lt;/h3>
+&lt;p>Via Email: &lt;a href="mailto:nereux@tuta.io">nereux@tuta.io&lt;/a>&lt;/p></content></item><item><title>Cargo Plugins</title><link>/posts/cargo-plugins/</link><pubDate>Sun, 12 Sep 2021 21:31:55 +0200</pubDate><guid>/posts/cargo-plugins/</guid><description>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):
+1. clippy Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common mistakes that can be found in Rust code.
+For example in this code:
+fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increase_vec(vector: &amp;amp;Vec&amp;lt;u32&amp;gt;) -&amp;gt; Vec&amp;lt;u32&amp;gt; { vector.</description><content>&lt;p>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p>
+&lt;h2 id="1-clippyhttpsgithubcomrust-langrust-clippy">1. &lt;a href="https://github.com/rust-lang/rust-clippy">clippy&lt;/a>&lt;/h2>
+&lt;p>Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common
+mistakes that can be found in Rust code.&lt;/p>
+&lt;p>For example in this code:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#66d9ef">let&lt;/span> vec &lt;span style="color:#f92672">=&lt;/span> vec&lt;span style="color:#f92672">!&lt;/span>[&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>];
+increase_vec(&lt;span style="color:#f92672">&amp;amp;&lt;/span>vec);
+}
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">increase_vec&lt;/span>(vector: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>) -&amp;gt; Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span> {
+vector.iter().map(&lt;span style="color:#f92672">|&lt;/span>v&lt;span style="color:#f92672">|&lt;/span> v &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>).collect()
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The default compiler gives no warnings at all. However, using &lt;code>cargo clippy&lt;/code> in the projects' directory gives us the
+following tip:
+&lt;a href="https://rust-lang.github.io/rust-clippy/master/index.html#ptr_arg">&lt;img src="./images/clippy_output.png" alt="Clippy Output">&lt;/a>&lt;/p>
+&lt;p>So we can replace the vector with a reference to an array which is faster since it uses one reference less.&lt;/p>
+&lt;p>Installing Clippy is very easy:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rustup update
+rustup component add clippy
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And we can run it using: &lt;code>cargo clippy&lt;/code>&lt;/p>
+&lt;h2 id="2-cargo-checkmatehttpsgithubcomnathan-at-leastcargo-checkmate">2. &lt;a href="https://github.com/nathan-at-least/cargo-checkmate">cargo-checkmate&lt;/a>&lt;/h2>
+&lt;p>This plugin bundles a bunch of other plugins together.
+It first performs a &lt;code>cargo check&lt;/code>, compares the current formatting with the one of &lt;code>cargo fmt&lt;/code>, checks if
+&lt;code>cargo build&lt;/code> passes, checks if tests pass, then checks if the docs compile and lastly runs &lt;code>cargo audit&lt;/code> to check for
+vulnerabilities in dependencies.&lt;/p>
+&lt;p>An output will probably look something like this:
+&lt;a href="https://github.com/nathan-at-least/cargo-checkmate">&lt;img src="./images/checkmate-output.jpg" alt="Checkmate Output">&lt;/a>&lt;/p>
+&lt;p>You can install it via:
+&lt;code>cargo install cargo-checkmate&lt;/code>&lt;/p>
+&lt;p>And to use it run:
+&lt;code>cargo checkmate&lt;/code>&lt;/p>
+&lt;p>And to execute it on every commit execute:
+&lt;code>cargo checkmate git-hook install&lt;/code>
+in the project folder.&lt;/p>
+&lt;h2 id="3-cargo-flamegraphhttpslibrscratesflamegraph">3. &lt;a href="https://lib.rs/crates/flamegraph">cargo flamegraph&lt;/a>&lt;/h2>
+&lt;p>Cargo flamegraph generates a so-called &amp;ldquo;flamegraph&amp;rdquo; of your program. It generates a graph which shows where execution
+time is being spent in your program. This way it can help you figure out what to optimize in order to get better
+performance out of your program.&lt;/p>
+&lt;p>By default, flamegraph will use the release output which is fine for most cases, however in order to get more
+information we can add&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">profile&lt;/span>.&lt;span style="color:#a6e22e">release&lt;/span>]
+&lt;span style="color:#a6e22e">debug&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>to our Cargo.toml.&lt;/p>
+&lt;p>To use it properly on Linux we either have to run it as root or lower &lt;code>perf_event_paranoid&lt;/code>(Which may not fit your security
+needs):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is what a graph looks like, from the example of &lt;a href="https://github.com/K4rakara/freshfetch">freshfetch&lt;/a>:
+&lt;a href="https://github.com/K4rakara/freshfetch">&lt;img src="./images/flamegraph_freshfetch.svg" alt="Checkmate Output">&lt;/a>&lt;/p>
+&lt;h2 id="4-honggfuzz-rshttpsgithubcomrust-fuzzhonggfuzz-rs">4. &lt;a href="https://github.com/rust-fuzz/honggfuzz-rs">honggfuzz-rs&lt;/a>&lt;/h2>
+&lt;p>Fuzzing has become very important in software security and stability nowadays. This fuzzer, developed by Google, is
+probably one of the best available.&lt;/p>
+&lt;p>We install it by using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo install honggfuzz
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add it to project dependencies using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;span style="color:#a6e22e">honggfuzz&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.5&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a target to fuzz:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">extern&lt;/span> &lt;span style="color:#66d9ef">crate&lt;/span> url;
+&lt;span style="color:#66d9ef">use&lt;/span> honggfuzz::fuzz;
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(){
+println(&lt;span style="color:#e6db74">&amp;#34;Starting fuzzer...&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">loop&lt;/span>{
+fuzz&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#f92672">|&lt;/span>data: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>[&lt;span style="color:#66d9ef">u8&lt;/span>]&lt;span style="color:#f92672">|&lt;/span> {
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#66d9ef">let&lt;/span> Ok(s) &lt;span style="color:#f92672">=&lt;/span> std::&lt;span style="color:#66d9ef">str&lt;/span>::from_utf8(data) {
+&lt;span style="color:#66d9ef">let&lt;/span> _ &lt;span style="color:#f92672">=&lt;/span> url::Url::parse(s);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now if we run:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo hfuzz run TARGET &lt;span style="color:#75715e"># TARGET is typically the crate name, but it depends&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We see a terminal like this:
+&lt;a href="https://honggfuzz.dev/">&lt;img src="../images/honggfuzz.png" alt="Honggfuzz Output">&lt;/a>&lt;/p>
+&lt;p>While it&amp;rsquo;s running we see a hfuzz_workspace directory, which has TARGET directory, where we can find
+the found unique crashes, along with a honggfuzz report, which contains details on how it crashed.&lt;/p>
+&lt;h2 id="5-cargo-updatehttpsgithubcomnabijaczlewelicargo-update">5. &lt;a href="https://github.com/nabijaczleweli/cargo-update">cargo-update&lt;/a>&lt;/h2>
+&lt;p>This Plugin is used to update all the binaries we just installed.&lt;/p>
+&lt;p>Install it by using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo install cargo-update
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And update binaries using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cargo install-update -a
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It would probably also make sense to make it a Pacman hook(or something similar on other Linux distros).&lt;/p>
+&lt;p>&lt;a href="https://gist.github.com/Nereuxofficial/3375a8c02a2e13a51ff24206f8fd6f46">Here is mine&lt;/a>, though you need to replace the
+[USER] with your username.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>There are obviously many Plugins I haven&amp;rsquo;t mentioned that are very useful too, for example
+&lt;a href="https://github.com/bheisler/cargo-criterion">cargo-criterion&lt;/a>, which is useful for benchmarks or
+&lt;a href="https://github.com/kbknapp/cargo-outdated">cargo-outdated&lt;/a>, which helps you keep your dependencies up to date.&lt;/p>
+&lt;p>But I hope at least some of them were useful to you and made your workflow a bit easier.&lt;/p></content></item></channel></rss>
