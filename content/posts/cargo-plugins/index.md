@@ -134,7 +134,7 @@ cargo hfuzz run TARGET # TARGET is typically the crate name, but it depends
 ```
 
 We see a terminal like this:
-[![Honggfuzz Output](../images/honggfuzz.png)](https://honggfuzz.dev/)
+[![Honggfuzz Output](./images/honggfuzz.png)](https://honggfuzz.dev/)
 
 While it's running we see a hfuzz_workspace directory, which has TARGET directory, where we can find
 the found unique crashes, along with a honggfuzz report, which contains details on how it crashed.

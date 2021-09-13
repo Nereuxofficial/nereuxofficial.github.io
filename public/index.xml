@@ -188,7 +188,7 @@ probably one of the best available.&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now if we run:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cargo hfuzz run TARGET &lt;span style=&#34;color:#75715e&#34;&gt;# TARGET is typically the crate name, but it depends&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see a terminal like this:
-&lt;a href=&#34;https://honggfuzz.dev/&#34;&gt;&lt;img src=&#34;../images/honggfuzz.png&#34; alt=&#34;Honggfuzz Output&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;a href=&#34;https://honggfuzz.dev/&#34;&gt;&lt;img src=&#34;./images/honggfuzz.png&#34; alt=&#34;Honggfuzz Output&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;While it&amp;rsquo;s running we see a hfuzz_workspace directory, which has TARGET directory, where we can find
 the found unique crashes, along with a honggfuzz report, which contains details on how it crashed.&lt;/p&gt;
 &lt;h2 id=&#34;5-cargo-updatehttpsgithubcomnabijaczlewelicargo-update&#34;&gt;5. &lt;a href=&#34;https://github.com/nabijaczleweli/cargo-update&#34;&gt;cargo-update&lt;/a&gt;&lt;/h2&gt;
