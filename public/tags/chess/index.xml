@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>chess on Nereuxofficials Blog</title>
+    <link>/tags/chess/</link>
+    <description>Recent content in chess on Nereuxofficials Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 12 Sep 2021 22:19:48 +0200</lastBuildDate><atom:link href="/tags/chess/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Writing a BitBoard in Rust</title>
+      <link>/posts/bitboard-rust/</link>
+      <pubDate>Sun, 12 Sep 2021 22:19:48 +0200</pubDate>
+      
+      <guid>/posts/bitboard-rust/</guid>
+      <description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
+Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.
+Memory The second reason to use BitBoards is because they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description>
+      <content>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
+&lt;p&gt;BitBoards are used in most successful chess engines for the following reasons:&lt;/p&gt;
+&lt;h3 id=&#34;speed&#34;&gt;Speed&lt;/h3&gt;
+&lt;p&gt;The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
+Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.&lt;/p&gt;
+&lt;h3 id=&#34;memory&#34;&gt;Memory&lt;/h3&gt;
+&lt;p&gt;The second reason to use BitBoards is because they are the most efficient way to store a board,
+which becomes relevant for the search in chess engines, since many boards are in memory during search.&lt;/p&gt;
+&lt;p&gt;But if you just want to make a chess browser game where memory or speed is not of great concern you really don&amp;rsquo;t need BitBoards.&lt;/p&gt;
+&lt;h2 id=&#34;explanation&#34;&gt;Explanation&lt;/h2&gt;
+&lt;p&gt;A BitBoard is essentially a 64-bit number with 1 bit for every square of a chess board.&lt;/p&gt;
+&lt;p&gt;Obviously we can only discern between piece and no piece here, so we have to have multiple BitBoards to store both teams
+and all 6 pieces.&lt;/p&gt;
+&lt;p&gt;So a position that looks like this:
+&lt;a href=&#34;https://lichess.org/editor/8/8/4r3/3k4/8/8/3K1Q2/8_w_-_-_0_1&#34;&gt;&lt;img src=&#34;./images/chess_position_1.jpg&#34; alt=&#34;8/8/4r3/3k4/8/8/3K1Q2/8 w - - 0 1&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Would be split into the following BitBoards:&lt;/p&gt;
+&lt;p&gt;Note that a 0 is represented with nothing and a 1 is represented with a black dot and the dark and light squares are also all just bits but this makes it easier to read.&lt;/p&gt;
+&lt;h3 id=&#34;white-pieces&#34;&gt;White Pieces&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_pieces_0.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;black-pieces&#34;&gt;Black Pieces&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_pieces_1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;white-queens&#34;&gt;White Queens&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_white_queens.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;white-kings&#34;&gt;White Kings&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_white_kings.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;There would also be another BitBoard for Black Kings, Black Rooks and a bunch of empty BitBoards for the pieces which are not present on this board, but I think you get the concept.&lt;/p&gt;
+&lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
+&lt;p&gt;So creating a BitBoard is pretty easy:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;u64&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can derive a bunch of traits:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(PartialEq, Eq, PartialOrd, Clone, Copy, Debug, Default, Hash)]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;u64&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can represent a chess board using BitBoards:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Position&lt;/span&gt;{
+    &lt;span style=&#34;color:#e6db74&#34;&gt;/// Board for each side
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    bb_sides: [BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
+    &lt;span style=&#34;color:#75715e&#34;&gt;// BitBoards for all pieces and each side
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    bb_pieces: [[BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;]; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For efficiency reasons we only store the position and not the move order etc. since that is irrelevant for evaluation.&lt;/p&gt;
+&lt;p&gt;For ease of use we should also &amp;ldquo;label&amp;rdquo; the BitBoards something&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Sides&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Sides {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Pieces&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Pieces{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; PAWN: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BISHOP: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; KNIGHT: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; ROOK: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; QUEEN: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; KING: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now  we can access a specific BitBoard in a way that is easy to read:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; white_queens: &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; position.bb_pieces[Sides::WHITE][Pieces::QUEEN]; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post we will explore how to implement States(Like En Passant, Side to Move, Move number etc.).
+If you read this far, thank you for your patience and the next post will follow soon.&lt;/p&gt;
+&lt;p&gt;And of course you can check out the entire &lt;a href=&#34;https://github.com/Nereuxofficial/BitBoard&#34;&gt;source code&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;credits-and-further-reading&#34;&gt;Credits and further reading&lt;/h2&gt;
+&lt;p&gt;Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the &lt;a href=&#34;https://www.chessprogramming.org/Bitboards&#34;&gt;Chess Programming Wiki&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Lichess Elite Analysis</title>
+      <link>/posts/lichess-elite-analysis/</link>
+      <pubDate>Sun, 12 Sep 2021 21:31:55 +0200</pubDate>
+      
+      <guid>/posts/lichess-elite-analysis/</guid>
+      <description>You can check out the source code
+I used the Lichess Elite Database, which only contains players over 2400 playing against opponents rated higher than 2200 and analyzed the latest version available using Python.
+Top Openings These are the most commonly played openings in the dataset:
+ Indian Game, played 12941 times Modern Defense, played 11642 times Sicilian Defense: Closed, played 10625 times Pirc Defense, played 8924 times Queen&amp;rsquo;s Pawn Game, played 7588 times Caro-Kann Defense, played 6089 times Trompowsky Attack, played 6088 times Benoni Defense: Old Benoni, played 5759 times King&amp;rsquo;s Indian Attack, played 5684 times Queen&amp;rsquo;s Pawn Game: Mason Variation, played 5514 times Sicilian Defense, played 5445 times Horwitz Defense, played 5181 times Zukertort Opening: Sicilian Invitation, played 4965 times Sicilian Defense: Najdorf Variation, played 4935 times Queen&amp;rsquo;s Pawn Game: London System, played 4298 times Queen&amp;rsquo;s Pawn Game: Zukertort Variation, played 4278 times Sicilian Defense: Alapin Variation, played 4076 times Nimzo-Larsen Attack: Classical Variation, played 4049 times Sicilian Defense: Old Sicilian, played 4032 times Modern Defense: Standard Defense, played 4000 times  </description>
+      <content>&lt;p&gt;You can check out &lt;a href=&#34;TODO&#34;&gt;the source code&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I used &lt;a href=&#34;https://database.nikonoel.fr/&#34;&gt;the Lichess Elite Database&lt;/a&gt;, which only contains players over 2400 playing
+against opponents rated higher than 2200 and analyzed the latest version available using Python.&lt;/p&gt;
+&lt;h2 id=&#34;top-openings&#34;&gt;Top Openings&lt;/h2&gt;
+&lt;p&gt;These are the most commonly played openings in the dataset:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Indian Game, played 12941 times&lt;/li&gt;
+&lt;li&gt;Modern Defense, played 11642 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Closed, played 10625 times&lt;/li&gt;
+&lt;li&gt;Pirc Defense, played 8924 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game, played 7588 times&lt;/li&gt;
+&lt;li&gt;Caro-Kann Defense, played 6089 times&lt;/li&gt;
+&lt;li&gt;Trompowsky Attack, played 6088 times&lt;/li&gt;
+&lt;li&gt;Benoni Defense: Old Benoni, played 5759 times&lt;/li&gt;
+&lt;li&gt;King&amp;rsquo;s Indian Attack, played 5684 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game: Mason Variation, played 5514 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense, played 5445 times&lt;/li&gt;
+&lt;li&gt;Horwitz Defense, played 5181 times&lt;/li&gt;
+&lt;li&gt;Zukertort Opening: Sicilian Invitation, played 4965 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Najdorf Variation, played 4935 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game: London System, played 4298 times&lt;/li&gt;
+&lt;li&gt;Queen&amp;rsquo;s Pawn Game: Zukertort Variation, played 4278 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Alapin Variation, played 4076 times&lt;/li&gt;
+&lt;li&gt;Nimzo-Larsen Attack: Classical Variation, played 4049 times&lt;/li&gt;
+&lt;li&gt;Sicilian Defense: Old Sicilian, played 4032 times&lt;/li&gt;
+&lt;li&gt;Modern Defense: Standard Defense, played 4000 times&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>
