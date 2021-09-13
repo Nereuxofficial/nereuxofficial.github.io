@@ -1,56 +1,74 @@
-baseURL = 'http://nereuxofficial.github.io/'
-languageCode = 'en-us'
-title = 'Nereuxofficials Blog'
-theme        = "hello-friend"
-paginate     = 10
+baseurl = "/"
+languageCode = "en-us"
+theme = "terminal"
+paginate = 5
 
 [params]
-  dateform        = "Jan 2, 2006"
-  dateformShort   = "Jan 2"
-  dateformNum     = "2006-01-02"
-  dateformNumTime = "2006-01-02 15:04"
+  # dir name of your main content (default is `content/posts`).
+  # the list of set content will show up on your index page (baseurl).
+  contentTypeName = "posts"
 
-  # Subtitle for home
-  homeSubtitle = "Inofficial Not-to-do-list"
+  # ["orange", "blue", "red", "green", "pink"]
+  themeColor = "red"
 
-  # Set disableReadOtherPosts to true in order to hide the links to other posts.
-  disableReadOtherPosts = false
+  # if you set this to 0, only submenu trigger will be visible
+  showMenuItems = 2
 
-  # Enable sharing buttons, if you like
-  enableSharingButtons = true
+  # show selector to switch language
+  showLanguageSelector = false
 
-  # Metadata mostly used in document's head
-  description = "My new homepage or blog"
-  keywords = "homepage, blog"
-  images = [""]
+  # set theme to full screen width
+  fullWidthTheme = false
 
-[taxonomies]
-    category = "blog"
-    tag      = "tags"
-    series   = "series"
+  # center theme with default width
+  centerTheme = false
+
+  # set a custom favicon (default is a `themeColor` square)
+  # favicon = "favicon.ico"
+
+  # set post to show the last updated
+  # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
+  showLastUpdated = false
+  # Provide a string as a prefix for the last update date. By default, it looks like this: 2020-xx-xx [Updated: 2020-xx-xx] :: Author
+  # updatedDatePrefix = "Updated"
+
+  # set all headings to their default size (depending on browser settings)
+  # it's set to `true` by default
+  # oneHeadingSize = false
+
+[params.twitter]
+  # set Twitter handles for Twitter cards
+  # see https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started#card-and-content-attribution
+  # do not include @
+  creator = ""
+  site = ""
 
 [languages]
   [languages.en]
-    title = "Nereuxofficial's Blog"
+    languageName = "English"
+    title = "Nereuxofficials Blog"
+    subtitle = "Inofficial Not-to-do-list"
+    owner = ""
     keywords = ""
-    copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+    copyright = ""
+    menuMore = "Show more"
+    readMore = "Read more"
     readOtherPosts = "Read other posts"
+    newerPosts = "Newer posts"
+    olderPosts = "Older posts"
+    missingContentMessage = "Page not found..."
+    missingBackButtonLabel = "Back to home page"
 
     [languages.en.params.logo]
-      logoText = "home"
+      logoText = "Home"
       logoHomeLink = "/"
-    # or
-    #
-    # path = "/img/your-example-logo.svg"
-    # alt = "Your example logo alt text"
-  [[menu.main]]
-    identifier = "about"
-    name = "About"
-    url = "/about"
-  
-  # And you can even create generic menu
-  [[menu.main]]
-    identifier = "blog"
-    name       = "Blog"
-    url        = "/posts"
-  
+
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "about"
+        name = "About"
+        url = "/about"
+      [[languages.en.menu.main]]
+        identifier = "posts"
+        name = "Posts"
+        url = "/posts"
