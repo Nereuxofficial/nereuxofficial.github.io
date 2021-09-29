@@ -4,7 +4,7 @@ date = 2021-08-23T22:19:48+02:00
 author = ""
 toc = false
 description = "BitBoards are used in the fastest chess engines on the market. So how do they work? And how do we implement them?"
-keywords = ["rust", "cargo"]
+keywords = ["rust", "chess", "bitboard"]
 tags = ["bitboard", "chess", "rust"]
 +++
 
