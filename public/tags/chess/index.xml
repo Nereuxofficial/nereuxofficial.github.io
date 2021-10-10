@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>chess on Nereuxofficials Blog</title>
-    <link>/tags/chess/</link>
-    <description>Recent content in chess on Nereuxofficials Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate><atom:link href="/tags/chess/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Writing a BitBoard in Rust</title>
-      <link>/posts/bitboard-rust/</link>
-      <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
-      
-      <guid>/posts/bitboard-rust/</guid>
-      <description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
-Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.
-Memory The second reason to use BitBoards is because they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description>
-      <content>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
+    <channel>
+        <title>chess on Nereuxofficials Blog</title>
+        <link>https://nereuxofficial.github.io/tags/chess/</link>
+        <description>Recent content in chess on Nereuxofficials Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate>
+        
+        <atom:link href="https://nereuxofficial.github.io/tags/chess/index.xml" rel="self" type="application/rss+xml" />
+        
+        
+        <item>
+            <title>Writing a BitBoard in Rust Pt. 1: The Basics</title>
+            <link>https://nereuxofficial.github.io/posts/bitboard-rust/</link>
+            <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
+            
+            <guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid>
+            <description>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
 &lt;p&gt;BitBoards are used in most successful chess engines for the following reasons:&lt;/p&gt;
 &lt;h3 id=&#34;speed&#34;&gt;Speed&lt;/h3&gt;
 &lt;p&gt;The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
@@ -86,8 +87,9 @@ If you read this far, thank you for your patience and the next post will follow 
 &lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-    </item>
-    
-  </channel>
+</description>
+        </item>
+        
+    </channel>
 </rss>
+

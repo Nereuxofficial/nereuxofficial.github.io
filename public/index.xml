@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Nereuxofficials Blog</title>
-    <link>/</link>
-    <description>Recent content on Nereuxofficials Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>About</title>
-      <link>/about/</link>
-      <pubDate>Sun, 12 Sep 2021 22:08:05 +0200</pubDate>
-      
-      <guid>/about/</guid>
-      <description>About Me Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on Github
-Contact me Via Email: nereux@tuta.io</description>
-      <content>&lt;h2 id=&#34;about-me&#34;&gt;About Me&lt;/h2&gt;
+    <channel>
+        <title>Nereuxofficials Blog</title>
+        <link>https://nereuxofficial.github.io/</link>
+        <description>Recent content on Nereuxofficials Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate>
+        
+        <atom:link href="https://nereuxofficial.github.io/index.xml" rel="self" type="application/rss+xml" />
+        
+        
+        <item>
+            <title>About</title>
+            <link>https://nereuxofficial.github.io/about/</link>
+            <pubDate>Sun, 12 Sep 2021 22:08:05 +0200</pubDate>
+            
+            <guid>https://nereuxofficial.github.io/about/</guid>
+            <description>&lt;h2 id=&#34;about-me&#34;&gt;About Me&lt;/h2&gt;
 &lt;p&gt;Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on &lt;a href=&#34;https://github.com/Nereuxofficial&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;contact-me&#34;&gt;Contact me&lt;/h3&gt;
 &lt;p&gt;Via Email: &lt;a href=&#34;mailto:nereux@tuta.io&#34;&gt;nereux@tuta.io&lt;/a&gt;&lt;/p&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>Writing a BitBoard in Rust</title>
-      <link>/posts/bitboard-rust/</link>
-      <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
-      
-      <guid>/posts/bitboard-rust/</guid>
-      <description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
-Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.
-Memory The second reason to use BitBoards is because they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description>
-      <content>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Writing a BitBoard in Rust Pt. 1: The Basics</title>
+            <link>https://nereuxofficial.github.io/posts/bitboard-rust/</link>
+            <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
+            
+            <guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid>
+            <description>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
 &lt;p&gt;BitBoards are used in most successful chess engines for the following reasons:&lt;/p&gt;
 &lt;h3 id=&#34;speed&#34;&gt;Speed&lt;/h3&gt;
 &lt;p&gt;The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
@@ -101,20 +100,16 @@ If you read this far, thank you for your patience and the next post will follow 
 &lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>Cargo Plugins</title>
-      <link>/posts/cargo-plugins/</link>
-      <pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate>
-      
-      <guid>/posts/cargo-plugins/</guid>
-      <description>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):
-1. clippy Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common mistakes that can be found in Rust code.
-For example in this code:
-fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increase_vec(vector: &amp;amp;Vec&amp;lt;u32&amp;gt;) -&amp;gt; Vec&amp;lt;u32&amp;gt; { vector.</description>
-      <content>&lt;p&gt;Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Cargo Plugins</title>
+            <link>https://nereuxofficial.github.io/posts/cargo-plugins/</link>
+            <pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate>
+            
+            <guid>https://nereuxofficial.github.io/posts/cargo-plugins/</guid>
+            <description>&lt;p&gt;Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p&gt;
 &lt;h2 id=&#34;1-clippyhttpsgithubcomrust-langrust-clippy&#34;&gt;1. &lt;a href=&#34;https://github.com/rust-lang/rust-clippy&#34;&gt;clippy&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common
 mistakes that can be found in Rust code.&lt;/p&gt;
@@ -205,8 +200,9 @@ the found unique crashes, along with a honggfuzz report, which contains details 
 &lt;a href=&#34;https://github.com/bheisler/cargo-criterion&#34;&gt;cargo-criterion&lt;/a&gt;, which is useful for benchmarks or
 &lt;a href=&#34;https://github.com/kbknapp/cargo-outdated&#34;&gt;cargo-outdated&lt;/a&gt;, which helps you keep your dependencies up to date.&lt;/p&gt;
 &lt;p&gt;But I hope at least some of them were useful to you and made your workflow a bit easier.&lt;/p&gt;
-</content>
-    </item>
-    
-  </channel>
+</description>
+        </item>
+        
+    </channel>
 </rss>
+
