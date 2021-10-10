@@ -1,5 +1,5 @@
 +++
-title =  "Writing a BitBoard in Rust"
+title =  "Writing a BitBoard in Rust Pt. 1: The Basics"
 date = 2021-08-23T22:19:48+02:00
 author = ""
 toc = false
