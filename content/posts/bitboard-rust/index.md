@@ -16,11 +16,11 @@ BitBoards are used in most successful chess engines for the following reasons:
 ### Speed
 
 The biggest reason to use BitBoards is speed. That's why all major chess engines use them.
-Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.
+Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.
 
 ### Memory
 
-The second reason to use BitBoards is because they are the most efficient way to store a board,
+The second reason to use BitBoards is that they are the most efficient way to store a board,
 which becomes relevant for the search in chess engines, since many boards are in memory during search.
 
 But if you just want to make a chess browser game where memory or speed is not of great concern you really don't need BitBoards.
@@ -114,8 +114,10 @@ let white_queens: BitBoard = position.bb_pieces[Sides::WHITE][Pieces::QUEEN];
 
 ## Conclusion
 
-This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post we will explore how to implement States(Like En Passant, Side to Move, Move number etc.).
-If you read this far, thank you for your patience and the next post will follow soon.
+This is nice, but only having BitBoard to represent a position is not very useful, so in [the next blog post]({{<ref "/posts/bitboard-rust-2">}})
+we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.). 
+
+If you have read this far, thank you for your patience.
 
 And of course you can check out the entire [source code](https://github.com/Nereuxofficial/BitBoard).
 
