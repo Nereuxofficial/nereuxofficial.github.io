@@ -1,29 +1,147 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>bitboard on Nereuxofficials Blog</title>
-        <link>https://nereuxofficial.github.io/tags/bitboard/</link>
-        <description>Recent content in bitboard on Nereuxofficials Blog</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>en-us</language>
-        <lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate>
-        
-        <atom:link href="https://nereuxofficial.github.io/tags/bitboard/index.xml" rel="self" type="application/rss+xml" />
-        
-        
-        <item>
-            <title>Writing a BitBoard in Rust Pt. 1: The Basics</title>
-            <link>https://nereuxofficial.github.io/posts/bitboard-rust/</link>
-            <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
-            
-            <guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid>
-            <description>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
+  <channel>
+    <title>bitboard on Nereuxofficials Blog</title>
+    <link>https://nereuxofficial.github.io/tags/bitboard/</link>
+    <description>Recent content in bitboard on Nereuxofficials Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 14 Sep 2021 08:11:54 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/bitboard/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Writing a BitBoard in Rust Pt. 2: The Game State</title>
+      <link>https://nereuxofficial.github.io/posts/bitboard-rust-2/</link>
+      <pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/posts/bitboard-rust-2/</guid>
+      <description>In the last blog post we created BitBoards and stored them inside a Position. To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example of this:  In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a pawn. Just looking at the board though we cannot be sure that en passant is a legal move.</description>
+      <content>&lt;p&gt;In the last blog post we created &lt;code&gt;BitBoard&lt;/code&gt;s and stored them inside a &lt;code&gt;Position&lt;/code&gt;.
+To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example
+of this:
+&lt;a href=&#34;https://lichess.org/editor/2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1_w_-_-_0_1&#34;&gt;&lt;img src=&#34;./images/En_Passant_position.png&#34; alt=&#34;2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1 w - - 0 1&#34;&gt;&lt;/a&gt;
+In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a
+pawn. Just looking at the board though we cannot be sure that en passant is a legal move.&lt;/p&gt;
+&lt;h2 id=&#34;explanation&#34;&gt;Explanation&lt;/h2&gt;
+&lt;p&gt;So we need additional information in order to evaluate the position. This will be stored in the struct called &lt;code&gt;State&lt;/code&gt;,
+which contains all necessary information to evaluate a position outside the pieces positions.&lt;/p&gt;
+&lt;p&gt;So it contains the:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Castling rights&lt;/li&gt;
+&lt;li&gt;Half move counter&lt;/li&gt;
+&lt;li&gt;Side to move&lt;/li&gt;
+&lt;li&gt;En passant(if possible)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;An implementation can look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// Contains castling_rights, move_clocks, en_passant_square if possible and the side to move
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;State&lt;/span&gt; {
+    castling_rights: &lt;span style=&#34;color:#a6e22e&#34;&gt;CastlingRights&lt;/span&gt;,
+    en_passant_square: Option&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Square&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;,
+    half_move_counter: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt;,
+    stm: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt;,
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In order to define castling rights efficiently we do it similar to Stockfish. We define an u8 to store the castling
+rights. The first 4 bits are unused and the latter ones are used to store one castling right.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// Castling rights are stored in a [`u8`], which is divided into the following parts:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// ```text
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 0 1 0 1   1                1               0                0
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// ^^^^^^^   ^                ^               ^                ^
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// unused    Black queen side Black king side White queen side White king side
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// ```
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;CastlingRights&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt;);
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; CastlingRights {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;empty&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Self(Castling::NO_CASTLING)
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;all&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Self::default()
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Default &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; CastlingRights {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;default&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Self(Castling::ANY_CASTLING)
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And a helper struct to more easily use &lt;code&gt;CastlingRights&lt;/code&gt;, which I put in my defs.rs:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// Provides labels for the [`CastlingRights`]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Castling&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Castling {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; NO_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE_00: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00000001&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE_000: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00000010&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK_00: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00000100&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK_000: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00001000&lt;/span&gt;;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; KING_SIDE: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_00 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_00;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; QUEEN_SIDE: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_000 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_000;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::WHITE_00 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_000;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_00 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::BLACK_000;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; ANY_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_CASTLING &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_CASTLING;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we also need a way to represent squares in order to use en_passant_square, which we can nicely do with an enum in
+Rust:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Hash, PartialEq, Eq, Debug, Clone)]&lt;/span&gt;
+&lt;span style=&#34;color:#e6db74&#34;&gt;/// Represents a single square on the board.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// # Representation
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 1 is A1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 2 is B1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 64 is H8
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Square&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt;);
+
+&lt;span style=&#34;color:#e6db74&#34;&gt;/// Labels for every [`Square`] on the board.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[repr(usize)]&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#[rustfmt::skip]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SquareLabels&lt;/span&gt; {
+    None,
+    A1, B1, C1, D1, E1, F1, G1, H1,
+    A2, B2, C2, D2, E2, F2, G2, H2,
+    A3, B3, C3, D3, E3, F3, G3, H3,
+    A4, B4, C4, D4, E4, F4, G4, H4,
+    A5, B5, C5, D5, E5, F5, G5, H5,
+    A6, B6, C6, D6, E6, F6, G6, H6,
+    A7, B7, C7, D7, E7, F7, G7, H7,
+    A8, B8, C8, D8, E8, F8, G8, H8,
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And lastly we need to add the &lt;code&gt;State&lt;/code&gt; to the &lt;code&gt;Position&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// A Position contains everything necessary to calculate moves and evaluate a position.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Position&lt;/span&gt; {
+    &lt;span style=&#34;color:#e6db74&#34;&gt;/// The board for each side
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    bb_sides: [BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;/// BitBoards for all pieces and each side
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    bb_pieces: [[BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;]; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;/// State contains all relevant information for evaluating a position outside the pieces.
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    state: &lt;span style=&#34;color:#a6e22e&#34;&gt;State&lt;/span&gt;,
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;credits-and-further-reading&#34;&gt;Credits and further reading&lt;/h2&gt;
+&lt;p&gt;Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the &lt;a href=&#34;https://www.chessprogramming.org/Bitboards&#34;&gt;Chess Programming Wiki&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;the &lt;a href=&#34;https://youtube.com/playlist?list=PLZ1QII7yudbc-Ky058TEaOstZHVbT-2hg&#34;&gt;Chess Engine in C Series&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Writing a BitBoard in Rust Pt. 1: The Basics</title>
+      <link>https://nereuxofficial.github.io/posts/bitboard-rust/</link>
+      <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid>
+      <description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
+Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.
+Memory The second reason to use BitBoards is that they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description>
+      <content>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
 &lt;p&gt;BitBoards are used in most successful chess engines for the following reasons:&lt;/p&gt;
 &lt;h3 id=&#34;speed&#34;&gt;Speed&lt;/h3&gt;
 &lt;p&gt;The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
-Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.&lt;/p&gt;
+Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.&lt;/p&gt;
 &lt;h3 id=&#34;memory&#34;&gt;Memory&lt;/h3&gt;
-&lt;p&gt;The second reason to use BitBoards is because they are the most efficient way to store a board,
+&lt;p&gt;The second reason to use BitBoards is that they are the most efficient way to store a board,
 which becomes relevant for the search in chess engines, since many boards are in memory during search.&lt;/p&gt;
 &lt;p&gt;But if you just want to make a chess browser game where memory or speed is not of great concern you really don&amp;rsquo;t need BitBoards.&lt;/p&gt;
 &lt;h2 id=&#34;explanation&#34;&gt;Explanation&lt;/h2&gt;
@@ -77,8 +195,9 @@ and all 6 pieces.&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now  we can access a specific BitBoard in a way that is easy to read:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; white_queens: &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; position.bb_pieces[Sides::WHITE][Pieces::QUEEN]; 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post we will explore how to implement States(Like En Passant, Side to Move, Move number etc.).
-If you read this far, thank you for your patience and the next post will follow soon.&lt;/p&gt;
+&lt;p&gt;This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post
+we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.).&lt;/p&gt;
+&lt;p&gt;If you have read this far, thank you for your patience.&lt;/p&gt;
 &lt;p&gt;And of course you can check out the entire &lt;a href=&#34;https://github.com/Nereuxofficial/BitBoard&#34;&gt;source code&lt;/a&gt;.&lt;/p&gt;
 &lt;h2 id=&#34;credits-and-further-reading&#34;&gt;Credits and further reading&lt;/h2&gt;
 &lt;p&gt;Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p&gt;
@@ -87,9 +206,8 @@ If you read this far, thank you for your patience and the next post will follow 
 &lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-        </item>
-        
-    </channel>
+</content>
+    </item>
+    
+  </channel>
 </rss>
-

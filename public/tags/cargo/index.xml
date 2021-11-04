@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>cargo on Nereuxofficials Blog</title>
-        <link>https://nereuxofficial.github.io/tags/cargo/</link>
-        <description>Recent content in cargo on Nereuxofficials Blog</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>en-us</language>
-        <lastBuildDate>Thu, 12 Aug 2021 21:31:55 +0200</lastBuildDate>
-        
-        <atom:link href="https://nereuxofficial.github.io/tags/cargo/index.xml" rel="self" type="application/rss+xml" />
-        
-        
-        <item>
-            <title>Cargo Plugins</title>
-            <link>https://nereuxofficial.github.io/posts/cargo-plugins/</link>
-            <pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate>
-            
-            <guid>https://nereuxofficial.github.io/posts/cargo-plugins/</guid>
-            <description>&lt;p&gt;Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p&gt;
+  <channel>
+    <title>cargo on Nereuxofficials Blog</title>
+    <link>https://nereuxofficial.github.io/tags/cargo/</link>
+    <description>Recent content in cargo on Nereuxofficials Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 12 Aug 2021 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/cargo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cargo Plugins</title>
+      <link>https://nereuxofficial.github.io/posts/cargo-plugins/</link>
+      <pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/posts/cargo-plugins/</guid>
+      <description>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):
+1. clippy Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common mistakes that can be found in Rust code.
+For example in this code:
+fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increase_vec(vector: &amp;amp;Vec&amp;lt;u32&amp;gt;) -&amp;gt; Vec&amp;lt;u32&amp;gt; { vector.</description>
+      <content>&lt;p&gt;Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p&gt;
 &lt;h2 id=&#34;1-clippyhttpsgithubcomrust-langrust-clippy&#34;&gt;1. &lt;a href=&#34;https://github.com/rust-lang/rust-clippy&#34;&gt;clippy&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common
 mistakes that can be found in Rust code.&lt;/p&gt;
@@ -108,9 +108,8 @@ the found unique crashes, along with a honggfuzz report, which contains details 
 &lt;a href=&#34;https://github.com/bheisler/cargo-criterion&#34;&gt;cargo-criterion&lt;/a&gt;, which is useful for benchmarks or
 &lt;a href=&#34;https://github.com/kbknapp/cargo-outdated&#34;&gt;cargo-outdated&lt;/a&gt;, which helps you keep your dependencies up to date.&lt;/p&gt;
 &lt;p&gt;But I hope at least some of them were useful to you and made your workflow a bit easier.&lt;/p&gt;
-</description>
-        </item>
-        
-    </channel>
+</content>
+    </item>
+    
+  </channel>
 </rss>
-

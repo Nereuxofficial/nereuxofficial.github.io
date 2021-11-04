@@ -157,9 +157,9 @@
 <p>BitBoards are used in most successful chess engines for the following reasons:</p>
 <h3 id="speed">Speed<a href="#speed" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>The biggest reason to use BitBoards is speed. That&rsquo;s why all major chess engines use them.
-Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.</p>
+Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.</p>
 <h3 id="memory">Memory<a href="#memory" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>The second reason to use BitBoards is because they are the most efficient way to store a board,
+<p>The second reason to use BitBoards is that they are the most efficient way to store a board,
 which becomes relevant for the search in chess engines, since many boards are in memory during search.</p>
 <p>But if you just want to make a chess browser game where memory or speed is not of great concern you really don&rsquo;t need BitBoards.</p>
 <h2 id="explanation">Explanation<a href="#explanation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
@@ -213,8 +213,9 @@ and all 6 pieces.</p>
 </code></pre></div><p>Now  we can access a specific BitBoard in a way that is easy to read:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">let</span> white_queens: <span style="color:#a6e22e">BitBoard</span> <span style="color:#f92672">=</span> position.bb_pieces[Sides::WHITE][Pieces::QUEEN]; 
 </code></pre></div><h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post we will explore how to implement States(Like En Passant, Side to Move, Move number etc.).
-If you read this far, thank you for your patience and the next post will follow soon.</p>
+<p>This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post
+we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.).</p>
+<p>If you have read this far, thank you for your patience.</p>
 <p>And of course you can check out the entire <a href="https://github.com/Nereuxofficial/BitBoard">source code</a>.</p>
 <h2 id="credits-and-further-reading">Credits and further reading<a href="#credits-and-further-reading" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Many articles and projects have helped me in the writing of this Blog Post, notably:</p>
@@ -234,6 +235,13 @@ If you read this far, thank you for your patience and the next post will follow 
         <hr />
     </div>
     <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://nereuxofficial.github.io/posts/bitboard-rust-2/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Writing a BitBoard in Rust Pt. 2: The Game State</span>
+            </a>
+        </span>
         
         
         <span class="button next">

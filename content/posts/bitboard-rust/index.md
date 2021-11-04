@@ -114,7 +114,7 @@ let white_queens: BitBoard = position.bb_pieces[Sides::WHITE][Pieces::QUEEN];
 
 ## Conclusion
 
-This is nice, but only having BitBoard to represent a position is not very useful, so in [the next blog post]({{<ref "/posts/bitboard-rust-2">}})
+This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post
 we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.). 
 
 If you have read this far, thank you for your patience.

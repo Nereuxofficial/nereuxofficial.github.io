@@ -4,7 +4,6 @@ date = "2021-09-14T08:11:54+02:00"
 author = ""
 authorTwitter = "" #do not include @
 cover = ""
-draft = true
 tags = ["bitboard", "chess", "rust"]
 keywords = ["bitboard", "chess", "rust"]
 description = "Now that we have a bitboard to store the pieces, we need a way to store the game state"
@@ -12,7 +11,7 @@ showFullContent = false
 +++
 
 
-In [the last blog post]({{<ref "/posts/bitboard-rust">}}) we created `BitBoard`s and stored them inside a `Position`.
+In the last blog post we created `BitBoard`s and stored them inside a `Position`.
 To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example 
 of this:
 [![2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1 w - - 0 1](./images/En_Passant_position.png)](https://lichess.org/editor/2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1_w_-_-_0_1)
