@@ -7,7 +7,7 @@ fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increas
 mistakes that can be found in Rust code.&lt;/p>
 &lt;p>For example in this code:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
-&lt;span style="color:#66d9ef">let&lt;/span> vec &lt;span style="color:#f92672">=&lt;/span> vec&lt;span style="color:#f92672">!&lt;/span>[&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>];
+&lt;span style="color:#66d9ef">let&lt;/span> vec &lt;span style="color:#f92672">=&lt;/span> vec![&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>];
 increase_vec(&lt;span style="color:#f92672">&amp;amp;&lt;/span>vec);
 }
 &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">increase_vec&lt;/span>(vector: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>) -&amp;gt; Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span> {

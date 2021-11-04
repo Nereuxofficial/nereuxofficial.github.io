@@ -1,12 +1,116 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>bitboard on Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/tags/bitboard/</link><description>Recent content in bitboard on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 23 Aug 2021 22:19:48 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/bitboard/index.xml" rel="self" type="application/rss+xml"/><item><title>Writing a BitBoard in Rust Pt. 1: The Basics</title><link>https://nereuxofficial.github.io/posts/bitboard-rust/</link><pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid><description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
-Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.
-Memory The second reason to use BitBoards is because they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description><content>&lt;h2 id="why-bitboards">Why BitBoards?&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>bitboard on Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/tags/bitboard/</link><description>Recent content in bitboard on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 14 Sep 2021 08:11:54 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/bitboard/index.xml" rel="self" type="application/rss+xml"/><item><title>Writing a BitBoard in Rust Pt. 2: The Game State</title><link>https://nereuxofficial.github.io/posts/bitboard-rust-2/</link><pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/bitboard-rust-2/</guid><description>In the last blog post we created BitBoards and stored them inside a Position. To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example of this: In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a pawn. Just looking at the board though we cannot be sure that en passant is a legal move.</description><content>&lt;p>In the last blog post we created &lt;code>BitBoard&lt;/code>s and stored them inside a &lt;code>Position&lt;/code>.
+To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example
+of this:
+&lt;a href="https://lichess.org/editor/2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1_w_-_-_0_1">&lt;img src="./images/En_Passant_position.png" alt="2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1 w - - 0 1">&lt;/a>
+In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a
+pawn. Just looking at the board though we cannot be sure that en passant is a legal move.&lt;/p>
+&lt;h2 id="explanation">Explanation&lt;/h2>
+&lt;p>So we need additional information in order to evaluate the position. This will be stored in the struct called &lt;code>State&lt;/code>,
+which contains all necessary information to evaluate a position outside the pieces positions.&lt;/p>
+&lt;p>So it contains the:&lt;/p>
+&lt;ul>
+&lt;li>Castling rights&lt;/li>
+&lt;li>Half move counter&lt;/li>
+&lt;li>Side to move&lt;/li>
+&lt;li>En passant(if possible)&lt;/li>
+&lt;/ul>
+&lt;p>An implementation can look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#e6db74">/// Contains castling_rights, move_clocks, en_passant_square if possible and the side to move
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span>
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">State&lt;/span> {
+castling_rights: &lt;span style="color:#a6e22e">CastlingRights&lt;/span>,
+en_passant_square: Option&lt;span style="color:#f92672">&amp;lt;&lt;/span>Square&lt;span style="color:#f92672">&amp;gt;&lt;/span>,
+half_move_counter: &lt;span style="color:#66d9ef">u8&lt;/span>,
+stm: &lt;span style="color:#66d9ef">usize&lt;/span>,
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In order to define castling rights efficiently we do it similar to Stockfish. We define an u8 to store the castling
+rights. The first 4 bits are unused and the latter ones are used to store one castling right.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#e6db74">/// Castling rights are stored in a [`u8`], which is divided into the following parts:
+&lt;/span>&lt;span style="color:#e6db74">/// ```text
+&lt;/span>&lt;span style="color:#e6db74">/// 0 1 0 1 1 1 0 0
+&lt;/span>&lt;span style="color:#e6db74">/// ^^^^^^^ ^ ^ ^ ^
+&lt;/span>&lt;span style="color:#e6db74">/// unused Black queen side Black king side White queen side White king side
+&lt;/span>&lt;span style="color:#e6db74">/// ```
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span>
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">CastlingRights&lt;/span>(&lt;span style="color:#66d9ef">u8&lt;/span>);
+&lt;span style="color:#66d9ef">impl&lt;/span> CastlingRights {
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">empty&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+Self(Castling::NO_CASTLING)
+}
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">all&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+Self::default()
+}
+}
+&lt;span style="color:#66d9ef">impl&lt;/span> Default &lt;span style="color:#66d9ef">for&lt;/span> CastlingRights {
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">default&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+Self(Castling::ANY_CASTLING)
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And a helper struct to more easily use &lt;code>CastlingRights&lt;/code>, which I put in my defs.rs:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#e6db74">/// Provides labels for the [`CastlingRights`]
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Castling&lt;/span>;
+&lt;span style="color:#66d9ef">impl&lt;/span> Castling {
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> NO_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE_00: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00000001&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE_000: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00000010&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK_00: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00000100&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK_000: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00001000&lt;/span>;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> KING_SIDE: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_00 &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_00;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> QUEEN_SIDE: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_000 &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_000;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::WHITE_00 &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_000;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_00 &lt;span style="color:#f92672">|&lt;/span> Self::BLACK_000;
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> ANY_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_CASTLING &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_CASTLING;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And we also need a way to represent squares in order to use en_passant_square, which we can nicely do with an enum in
+Rust:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#75715e">#[derive(Hash, PartialEq, Eq, Debug, Clone)]&lt;/span>
+&lt;span style="color:#e6db74">/// Represents a single square on the board.
+&lt;/span>&lt;span style="color:#e6db74">/// # Representation
+&lt;/span>&lt;span style="color:#e6db74">/// 1 is A1
+&lt;/span>&lt;span style="color:#e6db74">/// 2 is B1
+&lt;/span>&lt;span style="color:#e6db74">/// 64 is H8
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Square&lt;/span>(&lt;span style="color:#66d9ef">usize&lt;/span>);
+&lt;span style="color:#e6db74">/// Labels for every [`Square`] on the board.
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[repr(usize)]&lt;/span>
+&lt;span style="color:#75715e">#[rustfmt::skip]&lt;/span>
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">enum&lt;/span> &lt;span style="color:#a6e22e">SquareLabels&lt;/span> {
+None,
+A1, B1, C1, D1, E1, F1, G1, H1,
+A2, B2, C2, D2, E2, F2, G2, H2,
+A3, B3, C3, D3, E3, F3, G3, H3,
+A4, B4, C4, D4, E4, F4, G4, H4,
+A5, B5, C5, D5, E5, F5, G5, H5,
+A6, B6, C6, D6, E6, F6, G6, H6,
+A7, B7, C7, D7, E7, F7, G7, H7,
+A8, B8, C8, D8, E8, F8, G8, H8,
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And lastly we need to add the &lt;code>State&lt;/code> to the &lt;code>Position&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#e6db74">/// A Position contains everything necessary to calculate moves and evaluate a position.
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span>
+&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Position&lt;/span> {
+&lt;span style="color:#e6db74">/// The board for each side
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> bb_sides: [BitBoard; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;span style="color:#e6db74">/// BitBoards for all pieces and each side
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> bb_pieces: [[BitBoard; &lt;span style="color:#ae81ff">6&lt;/span>]; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;span style="color:#e6db74">/// State contains all relevant information for evaluating a position outside the pieces.
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> state: &lt;span style="color:#a6e22e">State&lt;/span>,
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="credits-and-further-reading">Credits and further reading&lt;/h2>
+&lt;p>Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p>
+&lt;ul>
+&lt;li>the &lt;a href="https://www.chessprogramming.org/Bitboards">Chess Programming Wiki&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://rustic-chess.org/">rustic project&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://github.com/peterellisjones/rust_move_gen">rust-move-gen&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://youtube.com/playlist?list=PLZ1QII7yudbc-Ky058TEaOstZHVbT-2hg">Chess Engine in C Series&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>Writing a BitBoard in Rust Pt. 1: The Basics</title><link>https://nereuxofficial.github.io/posts/bitboard-rust/</link><pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid><description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
+Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.
+Memory The second reason to use BitBoards is that they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description><content>&lt;h2 id="why-bitboards">Why BitBoards?&lt;/h2>
 &lt;p>BitBoards are used in most successful chess engines for the following reasons:&lt;/p>
 &lt;h3 id="speed">Speed&lt;/h3>
 &lt;p>The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
-Since they only use one instruction per operation on 64-bit CPUs they are the naturally fastest way to make moves.&lt;/p>
+Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.&lt;/p>
 &lt;h3 id="memory">Memory&lt;/h3>
-&lt;p>The second reason to use BitBoards is because they are the most efficient way to store a board,
+&lt;p>The second reason to use BitBoards is that they are the most efficient way to store a board,
 which becomes relevant for the search in chess engines, since many boards are in memory during search.&lt;/p>
 &lt;p>But if you just want to make a chess browser game where memory or speed is not of great concern you really don&amp;rsquo;t need BitBoards.&lt;/p>
 &lt;h2 id="explanation">Explanation&lt;/h2>
@@ -59,8 +163,9 @@ and all 6 pieces.&lt;/p>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can access a specific BitBoard in a way that is easy to read:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> white_queens: &lt;span style="color:#a6e22e">BitBoard&lt;/span> &lt;span style="color:#f92672">=&lt;/span> position.bb_pieces[Sides::WHITE][Pieces::QUEEN];
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="conclusion">Conclusion&lt;/h2>
-&lt;p>This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post we will explore how to implement States(Like En Passant, Side to Move, Move number etc.).
-If you read this far, thank you for your patience and the next post will follow soon.&lt;/p>
+&lt;p>This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post
+we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.).&lt;/p>
+&lt;p>If you have read this far, thank you for your patience.&lt;/p>
 &lt;p>And of course you can check out the entire &lt;a href="https://github.com/Nereuxofficial/BitBoard">source code&lt;/a>.&lt;/p>
 &lt;h2 id="credits-and-further-reading">Credits and further reading&lt;/h2>
 &lt;p>Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p>

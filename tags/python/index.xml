@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>python on Nereuxofficials Blog</title>
-    <link>/tags/python/</link>
+    <link>https://nereuxofficial.github.io/tags/python/</link>
     <description>Recent content in python on Nereuxofficials Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Sep 2021 21:31:55 +0200</lastBuildDate><atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Sep 2021 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Lichess Elite Analysis</title>
-      <link>/posts/lichess-elite-analysis/</link>
+      <link>https://nereuxofficial.github.io/posts/lichess-elite-analysis/</link>
       <pubDate>Sun, 12 Sep 2021 21:31:55 +0200</pubDate>
       
-      <guid>/posts/lichess-elite-analysis/</guid>
+      <guid>https://nereuxofficial.github.io/posts/lichess-elite-analysis/</guid>
       <description>You can check out the source code
 I used the Lichess Elite Database, which only contains players over 2400 playing against opponents rated higher than 2200 and analyzed the latest version available using Python.
 Top Openings These are the most commonly played openings in the dataset:
