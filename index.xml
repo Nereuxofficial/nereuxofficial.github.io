@@ -22,17 +22,8 @@ by following this post.&lt;/p>
 &lt;p>&lt;code>git clone https://github.com/esp-rs/rust-build&lt;/code>&lt;/p>
 &lt;p>Install it via this command:&lt;/p>
 &lt;p>&lt;code>cd rust-build; ./install-rust-toolchain.sh&lt;/code>&lt;/p>
-&lt;p>And now the thing the README.md doesn&amp;rsquo;t mention for some reason: You have to got into &lt;code>/opt/esp-idf/&lt;/code>
-and run this if you&amp;rsquo;re using bash &lt;code>./install.sh&lt;/code> and this if you&amp;rsquo;re running
-fish as your preferred shell: &lt;code>install.fish&lt;/code>.&lt;/p>
-&lt;p>If that was successful run:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>export IDF_PATH&lt;span style="color:#f92672">=&lt;/span>/opt/esp-idf/
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>. /opt/esp-idf/export.sh &lt;span style="color:#75715e">#or . /opt/esp-idf/export.fish when using fish&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Having done that, you should export this in order for bindgen to use the patched CLANG
-(This Path may change with updates):&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>export LIBCLANG_PATH&lt;span style="color:#f92672">=&lt;/span>/home/benedikt/.espressif/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/lib/
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>I also recommend setting this environment variable in your build scripts for ESP32 Projects.&lt;/p>
-&lt;p>Now use &lt;code>rustup default esp&lt;/code>(except if you have the C3 in which case you can use Rust nightly) and
+&lt;p>After the script is finished, follow the instructions at the end.&lt;/p>
+&lt;p>Now use &lt;code>rustup default esp&lt;/code>(except if you have the C in which case you can use Rust nightly) and
 install &lt;code>cargo install cargo-espflash&lt;/code>, used for flashing, and cargo pio(which decodes the stack trace):&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>python3 get-platformio.py
@@ -55,8 +46,7 @@ the command, which always worked for me.&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">ws2812-spi&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.4.0&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">smart-leds&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.3.0&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>At the start of our &lt;code>main.rs&lt;/code> file we need these since we&amp;rsquo;re working with
-a microcontroller and don&amp;rsquo;t have the std library for it(
-&lt;a href="https://github.com/ivmarkov/rust-esp32-std-demo">There is a project for the ESP32 with the std library&lt;/a>).&lt;/p>
+a microcontroller and don&amp;rsquo;t have the std library for it(&lt;a href="https://github.com/ivmarkov/rust-esp32-std-demo">There is a project for the ESP32 with the std library&lt;/a>).&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#![no_std]&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#![no_main]&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the main function:&lt;/p>
@@ -198,13 +188,14 @@ that the function will not return and this is also why we need the never ending 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And now we can flash it via:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo espflash --release /dev/ttyUSB0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you&amp;rsquo;ve read so far: Thanks, it means a lot to me!&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can find the entire source code &lt;a href="https://github.com/esp-rs/esp32-hal/blob/master/examples/leds.rs">here&lt;/a>&lt;/p>
+&lt;p>If you&amp;rsquo;ve read so far: Thanks, it means a lot to me!&lt;/p>
 &lt;p>In the future we may explore how to make this controllable with Wi-fi.&lt;/p>
 &lt;h2 id="thanks-to">Thanks to:&lt;/h2>
 &lt;p>&lt;a href="https://github.com/MaxDroid42">A friend of mine, who helped me get started with this project, especially the hardware
 part&lt;/a>&lt;/p>
 &lt;p>&lt;a href="https://github.com/esp-rs">The entire esp-rs GitHub organization for making ESP Chips Rust compatible&lt;/a>&lt;/p>
-&lt;p>&lt;a href="https://github.com/smart-leds-rs/smart-leds-samples/blob/master/microbit-v2-examples/examples/microbit_v2_ws2812_spi_blink.rs">smart-leds, and WS2812-spi, especially this example&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://github.com/smart-leds-rs/smart-leds-samples/blob/master/microbit-v2-examples/examples/microbit_v2_ws2812_spi_blink.rs">smart-leds and WS2812-spi, especially this example&lt;/a>&lt;/p>
 &lt;p>&lt;a href="https://kerkour.com/rust-on-esp32">This blog post&lt;/a>&lt;/p></content></item><item><title>Writing a BitBoard in Rust Pt. 2: The Game State</title><link>https://nereuxofficial.github.io/posts/bitboard-rust-2/</link><pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/bitboard-rust-2/</guid><description>In the last blog post we created BitBoards and stored them inside a Position. To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example of this: In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a pawn. Just looking at the board though we cannot be sure that en passant is a legal move.</description><content>&lt;p>In the last blog post we created &lt;code>BitBoard&lt;/code>s and stored them inside a &lt;code>Position&lt;/code>.
 To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example
 of this:
