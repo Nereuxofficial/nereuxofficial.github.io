@@ -46,33 +46,15 @@ Install it via this command:
 
 `cd rust-build; ./install-rust-toolchain.sh`
 
-And now the thing the README.md doesn't mention for some reason: You have to got into `/opt/esp-idf/`
-and run this if you're using bash `./install.sh` and this if you're running
-fish as your preferred shell: `install.fish`.
+After the script is finished, follow the instructions at the end.
 
-If that was successful run:
-```bash
-export IDF_PATH=/opt/esp-idf/
-. /opt/esp-idf/export.sh  #or . /opt/esp-idf/export.fish when using fish
-```
-
-Having done that, you should export this in order for bindgen to use the patched CLANG
-(This Path may change with updates):
-
-```bash
-export LIBCLANG_PATH=/home/benedikt/.espressif/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/lib/ 
-```
-
-I also recommend setting this environment variable in your build scripts for ESP32 Projects.
-
-Now use `rustup default esp`(except if you have the C3 in which case you can use Rust nightly) and
+Now use `rustup default esp`(except if you have the C in which case you can use Rust nightly) and
 install `cargo install cargo-espflash`, used for flashing, and cargo pio(which decodes the stack trace): 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
 python3 get-platformio.py
 cargo install cargo-pio
 ```
-
 
 Compile and flash via(on Windows you will have to look up the command yourself):
 
@@ -104,8 +86,7 @@ smart-leds = "0.3.0"
 ```
 
 At the start of our `main.rs` file we need these since we're working with 
-a microcontroller and don't have the std library for it(
-[There is a project for the ESP32 with the std library](https://github.com/ivmarkov/rust-esp32-std-demo)).
+a microcontroller and don't have the std library for it([There is a project for the ESP32 with the std library](https://github.com/ivmarkov/rust-esp32-std-demo)).
 ```rust
 #![no_std]
 #![no_main]
@@ -271,6 +252,8 @@ And now we can flash it via:
 cargo espflash --release /dev/ttyUSB0
 ```
 
+You can find the entire source code [here](https://github.com/esp-rs/esp32-hal/blob/master/examples/leds.rs)
+
 If you've read so far: Thanks, it means a lot to me!
 
 In the future we may explore how to make this controllable with Wi-fi.
@@ -281,6 +264,6 @@ part](https://github.com/MaxDroid42)
 
 [The entire esp-rs GitHub organization for making ESP Chips Rust compatible](https://github.com/esp-rs)
 
-[smart-leds, and WS2812-spi, especially this example](https://github.com/smart-leds-rs/smart-leds-samples/blob/master/microbit-v2-examples/examples/microbit_v2_ws2812_spi_blink.rs)
+[smart-leds and WS2812-spi, especially this example](https://github.com/smart-leds-rs/smart-leds-samples/blob/master/microbit-v2-examples/examples/microbit_v2_ws2812_spi_blink.rs)
 
 [This blog post](https://kerkour.com/rust-on-esp32)
