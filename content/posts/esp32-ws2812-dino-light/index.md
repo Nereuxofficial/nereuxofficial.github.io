@@ -10,7 +10,7 @@ description = "Found a cute thing on Thingiverse and decided to make it with ano
 showFullContent = false
 +++
 
-I found [this](https://www.thingiverse.com/thing:5220507/files) on thingiverse and 
+I found [this](https://www.thingiverse.com/thing:5220507/) on thingiverse and 
 decided to make it, but with Rust and an ESP32.
 
 
@@ -265,5 +265,7 @@ part](https://github.com/MaxDroid42)
 [The entire esp-rs GitHub organization for making ESP Chips Rust compatible](https://github.com/esp-rs)
 
 [smart-leds and WS2812-spi, especially this example](https://github.com/smart-leds-rs/smart-leds-samples/blob/master/microbit-v2-examples/examples/microbit_v2_ws2812_spi_blink.rs)
+
+[René van den Eertwegh on Thingiverse for the Models](https://www.thingiverse.com/renevandeneertwegh/designs)
 
 [This blog post](https://kerkour.com/rust-on-esp32)
