@@ -1,7 +1,7 @@
 baseurl = "https://nereuxofficial.github.io/"
 languageCode = "en-us"
 theme = "terminal"
-paginate = 5
+paginate = 10
 
 [params]
   # dir name of your main content (default is `content/posts`).
@@ -25,7 +25,7 @@ paginate = 5
 
   # set a custom favicon (default is a `themeColor` square)
   # favicon = "favicon.ico"
-
+  readingTime = true
   # set post to show the last updated
   # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
   showLastUpdated = false
@@ -47,8 +47,8 @@ paginate = 5
   [languages.en]
     languageName = "English"
     title = "Nereuxofficials Blog"
-    subtitle = "Inofficial Not-to-do-list"
-    owner = ""
+    # subtitle = "Inofficial Not-to-do-list"
+    owner = "Nereuxofficial"
     keywords = ""
     copyright = ""
     menuMore = "Show more"
@@ -69,6 +69,10 @@ paginate = 5
         name = "About"
         url = "/about"
       [[languages.en.menu.main]]
-        identifier = "posts"
-        name = "Posts"
-        url = "/posts"
+        identifier = "blog"
+        name = "Blog"
+        url = "/blog"
+      [[languages.en.menu.main]]
+        identifier = "donate"
+        name = "Donate"
+        url = "/donate"

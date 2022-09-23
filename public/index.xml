@@ -1,332 +1,488 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Nereuxofficials Blog</title>
-    <link>https://nereuxofficial.github.io/</link>
-    <description>Recent content on Nereuxofficials Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Tue, 14 Sep 2021 08:11:54 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Writing a BitBoard in Rust Pt. 2: The Game State</title>
-      <link>https://nereuxofficial.github.io/posts/bitboard-rust-2/</link>
-      <pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate>
-      
-      <guid>https://nereuxofficial.github.io/posts/bitboard-rust-2/</guid>
-      <description>In the last blog post we created BitBoards and stored them inside a Position. To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example of this:  In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a pawn. Just looking at the board though we cannot be sure that en passant is a legal move.</description>
-      <content>&lt;p&gt;In the last blog post we created &lt;code&gt;BitBoard&lt;/code&gt;s and stored them inside a &lt;code&gt;Position&lt;/code&gt;.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/</link><description>Recent content on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 24 Jul 2022 14:51:48 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Getting Rust to run on the Adafruit nRF52840</title><link>https://nereuxofficial.github.io/posts/adafruit-itsy-nrf52840/</link><pubDate>Sun, 24 Jul 2022 14:51:48 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/adafruit-itsy-nrf52840/</guid><description>Frustratingly it is not really easy to set Up Rust for the Adafruit itsybitsy nRF52840.
+I originally read this blog post
+Then discovered this adafruit-nrf52-bluefruit-le Repo which works better but the generated hex file in the second step only results in this:
+0000000 303a 3030 3030 3030 4631 0d46 000a 000000d which causes an error in the next step since adafruit-nrfutil tries to get the maxaddress of the blinky.hex file, which is in this case none since the hex file is apparently empty because there are no dict keys in there.</description><content>&lt;p>Frustratingly it is not really easy to set Up Rust for the Adafruit itsybitsy nRF52840.&lt;/p>
+&lt;p>I originally read &lt;a href="https://TODO">this blog post&lt;/a>&lt;/p>
+&lt;p>Then discovered &lt;a href="https://github.com/nrf-rs/adafruit-nrf52-bluefruit-le">this adafruit-nrf52-bluefruit-le Repo&lt;/a>
+which works better but the generated hex file in the second step only results in this:&lt;/p>
+&lt;pre tabindex="0">&lt;code>0000000 303a 3030 3030 3030 4631 0d46 000a
+000000d
+&lt;/code>&lt;/pre>&lt;p>which causes an error in the next step since adafruit-nrfutil tries to get the maxaddress of the blinky.hex file,
+which is in this case none since the hex file is apparently empty because there are no dict keys in there.
+This is because self._buf is empty&lt;/p></content></item><item><title>Making a Dino Light with the ESP32 and WS2812</title><link>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</guid><description>I found this on thingiverse and decided to make it, but with Rust and an ESP32.
+This is the final result: Hardware Part I&amp;rsquo;d recommend getting WS2812 strips with less than 144 Pixels/m since it&amp;rsquo;s really painful to solder with that density, especially when you have little experience with soldering like me. For the ESP32 I&amp;rsquo;d recommend the ESP32-C, since that chip has a RISC-V chip, which has better Rust support than the Xtensa based boards.</description><content>&lt;p>I found &lt;a href="https://www.thingiverse.com/thing:5220507/">this&lt;/a> on thingiverse and
+decided to make it, but with Rust and an ESP32.&lt;/p>
+&lt;p>This is the final result:
+&lt;img src="./images/dino_light.jpg" alt="This is the final result">&lt;/p>
+&lt;h2 id="hardware-part">Hardware Part&lt;/h2>
+&lt;p>I&amp;rsquo;d recommend getting WS2812 strips with less than 144 Pixels/m since it&amp;rsquo;s really
+painful to solder with that density, especially when you have little experience with
+soldering like me. For the ESP32 I&amp;rsquo;d recommend the ESP32-C, since that chip has a
+RISC-V chip, which has better Rust support than the Xtensa based boards.&lt;/p>
+&lt;p>If your microcontroller has a 5V connector we&amp;rsquo;re going to connect that to the 5V input of
+the LED strip, otherwise you&amp;rsquo;ll need another way to supply the 5V. Also, just connect the GND
+Pin to the GND Pin of the LEDs. As a data Pin, take a look at the Pin-out diagram of your board.
+In my case the GPIO15 should do nicely, since it&amp;rsquo;s not used for internal flashing and works nicely
+with SPI.&lt;/p>
+&lt;h2 id="software-part">Software Part&lt;/h2>
+&lt;h3 id="setting-up-the-toolchain-and-compiler">Setting up the toolchain and compiler&lt;/h3>
+&lt;p>This has been really painful for me to set up, and I hope you can avoid some frustration
+by following this post.&lt;/p>
+&lt;p>You can avoid nearly all of this setup by getting the ESP32-C as mentioned above.&lt;/p>
+&lt;p>Download rust-build using this command:&lt;/p>
+&lt;p>&lt;code>git clone https://github.com/esp-rs/rust-build&lt;/code>&lt;/p>
+&lt;p>Install it via this command:&lt;/p>
+&lt;p>&lt;code>cd rust-build; ./install-rust-toolchain.sh&lt;/code>&lt;/p>
+&lt;p>After the script is finished, follow the instructions at the end.&lt;/p>
+&lt;p>Now use &lt;code>rustup default esp&lt;/code>(except if you have the C in which case you can use Rust nightly) and
+install &lt;code>cargo install cargo-espflash&lt;/code>, used for flashing, and cargo pio(which decodes the stack trace):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>python3 get-platformio.py
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cargo install cargo-pio
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Compile and flash via(on Windows you will have to look up the command yourself):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo espflash --release /dev/ttyUSB0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If flashing with cargo espflash doesn&amp;rsquo;t work you can try pressing the &lt;code>Boot&lt;/code> Button during
+the command, which always worked for me.&lt;/p>
+&lt;p>We can monitor the serial output via:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo pio espidf monitor /dev/ttyUSB0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="code">Code&lt;/h2>
+&lt;p>For the dependencies we have this in our &lt;code>Cargo.toml&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># For the ESP32&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">esp32&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.11.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">esp32-hal&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.3.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">xtensa-lx&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.4.0&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;lx6&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">xtensa-lx-rt&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.7.0&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">optional&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;lx6&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># For the LEDs&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">ws2812-spi&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.4.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">smart-leds&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.3.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>At the start of our &lt;code>main.rs&lt;/code> file we need these since we&amp;rsquo;re working with
+a microcontroller and don&amp;rsquo;t have the std library for it(&lt;a href="https://github.com/ivmarkov/rust-esp32-std-demo">There is a project for the ESP32 with the std library&lt;/a>).&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#![no_std]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#![no_main]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the main function:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[entry]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() -&amp;gt; &lt;span style="color:#f92672">!&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We need the #[entry] attribute to define the entry point of the program and the &amp;ldquo;!&amp;rdquo; signals
+that the function will not return and this is also why we need the never ending loop.&lt;/p>
+&lt;p>Then the actual setup:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[entry]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() -&amp;gt; &lt;span style="color:#f92672">!&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> dp &lt;span style="color:#f92672">=&lt;/span> target::Peripherals::take().unwrap();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> (_, dport_clock_control) &lt;span style="color:#f92672">=&lt;/span> dp.DPORT.split();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> clkcntrl &lt;span style="color:#f92672">=&lt;/span> ClockControl::new(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.RTCCNTL,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.APB_CTRL,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dport_clock_control,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> XTAL_FREQUENCY_AUTO,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> (clkcntrl_config, _) &lt;span style="color:#f92672">=&lt;/span> clkcntrl.freeze().unwrap();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> pins &lt;span style="color:#f92672">=&lt;/span> dp.GPIO.split();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> data_out &lt;span style="color:#f92672">=&lt;/span> pins.gpio15.into_push_pull_output();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// We need SPI for the WS2812 library
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">let&lt;/span> spi: &lt;span style="color:#a6e22e">SPI&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>_, _, _, _&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> SPI::&lt;span style="color:#f92672">&amp;lt;&lt;/span>esp32::SPI2, _, _, _, _&lt;span style="color:#f92672">&amp;gt;&lt;/span>::new(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.SPI2,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> spi::Pins {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sclk: &lt;span style="color:#a6e22e">pins&lt;/span>.gpio14,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sdo: &lt;span style="color:#a6e22e">data_out&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sdi: Some(pins.gpio25),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cs: None,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> spi::config::Config {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> baudrate: &lt;span style="color:#ae81ff">3.&lt;/span>MHz().into(),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> bit_order: &lt;span style="color:#a6e22e">spi&lt;/span>::config::BitOrder::MSBFirst,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data_mode: &lt;span style="color:#a6e22e">spi&lt;/span>::config::MODE_0,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clkcntrl_config,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> ws &lt;span style="color:#f92672">=&lt;/span> Ws2812::new(spi);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we create some structs to control the Strip easier:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">const&lt;/span> NUM_LEDS: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">LightData&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [RGB8; NUM_LEDS],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Strip&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ws: &lt;span style="color:#a6e22e">Ws2812&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI2, Gpio14&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&lt;/span>, Gpio15&lt;span style="color:#f92672">&amp;lt;&lt;/span>Output&lt;span style="color:#f92672">&amp;lt;&lt;/span>PushPull&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>, Gpio25&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&amp;gt;&amp;gt;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data: &lt;span style="color:#a6e22e">LightData&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> brightness: &lt;span style="color:#66d9ef">u8&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And some functions to manipulate the data inside:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> LightData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">empty&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [RGB8::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>); NUM_LEDS],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">write_to_strip&lt;/span>(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>self,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">mut&lt;/span> Ws2812&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI2, Gpio14&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&lt;/span>, Gpio15&lt;span style="color:#f92672">&amp;lt;&lt;/span>Output&lt;span style="color:#f92672">&amp;lt;&lt;/span>PushPull&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>, Gpio25&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&amp;gt;&amp;gt;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.write(self.leds.iter().cloned()).unwrap();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">get_led&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>self, index: &lt;span style="color:#66d9ef">usize&lt;/span>) -&amp;gt; &lt;span style="color:#a6e22e">RGB8&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.leds[index]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_color_all&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, color: &lt;span style="color:#a6e22e">RGB8&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#f92672">..&lt;/span>NUM_LEDS {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.set_color(i, color);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_red&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, index: &lt;span style="color:#66d9ef">usize&lt;/span>, red: &lt;span style="color:#66d9ef">u8&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.leds[index].r &lt;span style="color:#f92672">=&lt;/span> red;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_green&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, index: &lt;span style="color:#66d9ef">usize&lt;/span>, green: &lt;span style="color:#66d9ef">u8&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.leds[index].g &lt;span style="color:#f92672">=&lt;/span> green;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_blue&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, index: &lt;span style="color:#66d9ef">usize&lt;/span>, blue: &lt;span style="color:#66d9ef">u8&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.leds[index].b &lt;span style="color:#f92672">=&lt;/span> blue;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_color&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, led: &lt;span style="color:#66d9ef">usize&lt;/span>, color: &lt;span style="color:#a6e22e">RGB8&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.leds[led] &lt;span style="color:#f92672">=&lt;/span> color;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Default &lt;span style="color:#66d9ef">for&lt;/span> LightData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">default&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [RGB8::new(STEPS, STEPS, STEPS); NUM_LEDS],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Strip {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">write&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.data.write_to_strip(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self.ws);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_color&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, color: &lt;span style="color:#a6e22e">RGB8&lt;/span>, index: &lt;span style="color:#66d9ef">usize&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.data.set_color(index, color);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.write();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_solid&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, color: &lt;span style="color:#a6e22e">RGB8&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.data.set_color_all(color);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.write();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">get_brightness&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.data.get_brightness();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then we can put this in the main function:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#66d9ef">mut&lt;/span> strip &lt;span style="color:#f92672">=&lt;/span> Strip {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ws,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data: &lt;span style="color:#a6e22e">LightData&lt;/span>::from_gradient(RGB8::new(&lt;span style="color:#ae81ff">40&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), RGB::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">40&lt;/span>)),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> brightness: &lt;span style="color:#ae81ff">10&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.set_solid(RGB8::new(&lt;span style="color:#ae81ff">25&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> delay(&lt;span style="color:#ae81ff">40_000_000&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#f92672">..&lt;/span>NUM_LEDS {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.set_color(RGB8::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">25&lt;/span>), i);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> delay(&lt;span style="color:#ae81ff">40_000_000&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will set the LEDs to red initially and individually turn them blue&lt;/p>
+&lt;p>Lastly we need a &lt;code>#[panic_handler]&lt;/code>, this will suffice for this example:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[panic_handler]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">panic&lt;/span>(info: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">PanicInfo&lt;/span>) -&amp;gt; &lt;span style="color:#f92672">!&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dprintln&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;\n\n*** {:?}&amp;#34;&lt;/span>, info);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span> {}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And now we can flash it via:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo espflash --release /dev/ttyUSB0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can find the entire source code &lt;a href="https://github.com/esp-rs/esp32-hal/blob/master/examples/leds.rs">here&lt;/a>&lt;/p>
+&lt;p>If you&amp;rsquo;ve read so far: Thanks, it means a lot to me!&lt;/p>
+&lt;p>In the future we may explore how to make this controllable with Wi-fi.&lt;/p>
+&lt;h2 id="thanks-to">Thanks to:&lt;/h2>
+&lt;p>&lt;a href="https://github.com/MaxDroid42">A friend of mine, who helped me get started with this project, especially the hardware
+part&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://github.com/esp-rs">The entire esp-rs GitHub organization for making ESP Chips Rust compatible&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://github.com/smart-leds-rs/smart-leds-samples/blob/master/microbit-v2-examples/examples/microbit_v2_ws2812_spi_blink.rs">smart-leds and WS2812-spi, especially this example&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://www.thingiverse.com/renevandeneertwegh/designs">René van den Eertwegh on Thingiverse for the Models&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://kerkour.com/rust-on-esp32">This blog post&lt;/a>&lt;/p></content></item><item><title>Writing a BitBoard in Rust Pt. 2: The Game State</title><link>https://nereuxofficial.github.io/posts/bitboard-rust-2/</link><pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/bitboard-rust-2/</guid><description>In the last blog post we created BitBoards and stored them inside a Position. To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example of this: In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a pawn. Just looking at the board though we cannot be sure that en passant is a legal move.</description><content>&lt;p>In the last blog post we created &lt;code>BitBoard&lt;/code>s and stored them inside a &lt;code>Position&lt;/code>.
 To evaluate a position we need more than the positioning of the pieces sometimes though. En-passant is a good example
 of this:
-&lt;a href=&#34;https://lichess.org/editor/2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1_w_-_-_0_1&#34;&gt;&lt;img src=&#34;./images/En_Passant_position.png&#34; alt=&#34;2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1 w - - 0 1&#34;&gt;&lt;/a&gt;
+&lt;a href="https://lichess.org/editor/2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1_w_-_-_0_1">&lt;img src="./images/En_Passant_position.png" alt="2k5/pp6/5p2/5Pp1/6B1/8/5PPP/6K1 w - - 0 1">&lt;/a>
 In this position capturing the pawn on g5 with En Passant is the best move if available since it allows us to promote a
-pawn. Just looking at the board though we cannot be sure that en passant is a legal move.&lt;/p&gt;
-&lt;h2 id=&#34;explanation&#34;&gt;Explanation&lt;/h2&gt;
-&lt;p&gt;So we need additional information in order to evaluate the position. This will be stored in the struct called &lt;code&gt;State&lt;/code&gt;,
-which contains all necessary information to evaluate a position outside the pieces positions.&lt;/p&gt;
-&lt;p&gt;So it contains the:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Castling rights&lt;/li&gt;
-&lt;li&gt;Half move counter&lt;/li&gt;
-&lt;li&gt;Side to move&lt;/li&gt;
-&lt;li&gt;En passant(if possible)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;An implementation can look like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// Contains castling_rights, move_clocks, en_passant_square if possible and the side to move
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;State&lt;/span&gt; {
-    castling_rights: &lt;span style=&#34;color:#a6e22e&#34;&gt;CastlingRights&lt;/span&gt;,
-    en_passant_square: Option&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Square&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;,
-    half_move_counter: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt;,
-    stm: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt;,
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In order to define castling rights efficiently we do it similar to Stockfish. We define an u8 to store the castling
-rights. The first 4 bits are unused and the latter ones are used to store one castling right.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// Castling rights are stored in a [`u8`], which is divided into the following parts:
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// ```text
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 0 1 0 1   1                1               0                0
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// ^^^^^^^   ^                ^               ^                ^
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// unused    Black queen side Black king side White queen side White king side
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// ```
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;CastlingRights&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt;);
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; CastlingRights {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;empty&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
-        Self(Castling::NO_CASTLING)
-    }
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;all&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
-        Self::default()
-    }
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Default &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; CastlingRights {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;default&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
-        Self(Castling::ANY_CASTLING)
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And a helper struct to more easily use &lt;code&gt;CastlingRights&lt;/code&gt;, which I put in my defs.rs:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// Provides labels for the [`CastlingRights`]
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Castling&lt;/span&gt;;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Castling {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; NO_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE_00: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00000001&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE_000: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00000010&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK_00: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00000100&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK_000: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0b00001000&lt;/span&gt;;
-
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; KING_SIDE: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_00 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_00;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; QUEEN_SIDE: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_000 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_000;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::WHITE_00 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_000;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_00 &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::BLACK_000;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; ANY_CASTLING: &lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Self::BLACK_CASTLING &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; Self::WHITE_CASTLING;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we also need a way to represent squares in order to use en_passant_square, which we can nicely do with an enum in
-Rust:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Hash, PartialEq, Eq, Debug, Clone)]&lt;/span&gt;
-&lt;span style=&#34;color:#e6db74&#34;&gt;/// Represents a single square on the board.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// # Representation
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 1 is A1
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 2 is B1
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// 64 is H8
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Square&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt;);
-
-&lt;span style=&#34;color:#e6db74&#34;&gt;/// Labels for every [`Square`] on the board.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[repr(usize)]&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;#[rustfmt::skip]&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SquareLabels&lt;/span&gt; {
-    None,
-    A1, B1, C1, D1, E1, F1, G1, H1,
-    A2, B2, C2, D2, E2, F2, G2, H2,
-    A3, B3, C3, D3, E3, F3, G3, H3,
-    A4, B4, C4, D4, E4, F4, G4, H4,
-    A5, B5, C5, D5, E5, F5, G5, H5,
-    A6, B6, C6, D6, E6, F6, G6, H6,
-    A7, B7, C7, D7, E7, F7, G7, H7,
-    A8, B8, C8, D8, E8, F8, G8, H8,
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And lastly we need to add the &lt;code&gt;State&lt;/code&gt; to the &lt;code&gt;Position&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/// A Position contains everything necessary to calculate moves and evaluate a position.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Position&lt;/span&gt; {
-    &lt;span style=&#34;color:#e6db74&#34;&gt;/// The board for each side
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    bb_sides: [BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
-    &lt;span style=&#34;color:#e6db74&#34;&gt;/// BitBoards for all pieces and each side
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    bb_pieces: [[BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;]; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
-    &lt;span style=&#34;color:#e6db74&#34;&gt;/// State contains all relevant information for evaluating a position outside the pieces.
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    state: &lt;span style=&#34;color:#a6e22e&#34;&gt;State&lt;/span&gt;,
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;credits-and-further-reading&#34;&gt;Credits and further reading&lt;/h2&gt;
-&lt;p&gt;Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;the &lt;a href=&#34;https://www.chessprogramming.org/Bitboards&#34;&gt;Chess Programming Wiki&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;the &lt;a href=&#34;https://youtube.com/playlist?list=PLZ1QII7yudbc-Ky058TEaOstZHVbT-2hg&#34;&gt;Chess Engine in C Series&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://nereuxofficial.github.io/about/</link>
-      <pubDate>Sun, 12 Sep 2021 22:08:05 +0200</pubDate>
-      
-      <guid>https://nereuxofficial.github.io/about/</guid>
-      <description>About Me Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on Github
-Contact me Via Email: nereux@tuta.io</description>
-      <content>&lt;h2 id=&#34;about-me&#34;&gt;About Me&lt;/h2&gt;
-&lt;p&gt;Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on &lt;a href=&#34;https://github.com/Nereuxofficial&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;contact-me&#34;&gt;Contact me&lt;/h3&gt;
-&lt;p&gt;Via Email: &lt;a href=&#34;mailto:nereux@tuta.io&#34;&gt;nereux@tuta.io&lt;/a&gt;&lt;/p&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>Writing a BitBoard in Rust Pt. 1: The Basics</title>
-      <link>https://nereuxofficial.github.io/posts/bitboard-rust/</link>
-      <pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate>
-      
-      <guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid>
-      <description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
+pawn. Just looking at the board though we cannot be sure that en passant is a legal move.&lt;/p>
+&lt;h2 id="explanation">Explanation&lt;/h2>
+&lt;p>So we need additional information in order to evaluate the position. This will be stored in the struct called &lt;code>State&lt;/code>,
+which contains all necessary information to evaluate a position outside the pieces positions.&lt;/p>
+&lt;p>So it contains the:&lt;/p>
+&lt;ul>
+&lt;li>Castling rights&lt;/li>
+&lt;li>Half move counter&lt;/li>
+&lt;li>Side to move&lt;/li>
+&lt;li>En passant(if possible)&lt;/li>
+&lt;/ul>
+&lt;p>An implementation can look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// Contains castling_rights, move_clocks, en_passant_square if possible and the side to move
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">State&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> castling_rights: &lt;span style="color:#a6e22e">CastlingRights&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> en_passant_square: Option&lt;span style="color:#f92672">&amp;lt;&lt;/span>Square&lt;span style="color:#f92672">&amp;gt;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> half_move_counter: &lt;span style="color:#66d9ef">u8&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> stm: &lt;span style="color:#66d9ef">usize&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>In order to define castling rights efficiently we do it similar to Stockfish. We define an u8 to store the castling
+rights. The first 4 bits are unused and the latter ones are used to store one castling right.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// Castling rights are stored in a [`u8`], which is divided into the following parts:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// ```text
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// 0 1 0 1 1 1 0 0
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// ^^^^^^^ ^ ^ ^ ^
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// unused Black queen side Black king side White queen side White king side
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// ```
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, Eq, PartialEq)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">CastlingRights&lt;/span>(&lt;span style="color:#66d9ef">u8&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> CastlingRights {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">empty&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self(Castling::NO_CASTLING)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">all&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self::default()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Default &lt;span style="color:#66d9ef">for&lt;/span> CastlingRights {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">default&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self(Castling::ANY_CASTLING)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And a helper struct to more easily use &lt;code>CastlingRights&lt;/code>, which I put in my defs.rs:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// Provides labels for the [`CastlingRights`]
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Castling&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Castling {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> NO_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE_00: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00000001&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE_000: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00000010&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK_00: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00000100&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK_000: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0b00001000&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> KING_SIDE: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_00 &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_00;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> QUEEN_SIDE: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_000 &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_000;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::WHITE_00 &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_000;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_00 &lt;span style="color:#f92672">|&lt;/span> Self::BLACK_000;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> ANY_CASTLING: &lt;span style="color:#66d9ef">u8&lt;/span> &lt;span style="color:#f92672">=&lt;/span> Self::BLACK_CASTLING &lt;span style="color:#f92672">|&lt;/span> Self::WHITE_CASTLING;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And we also need a way to represent squares in order to use en_passant_square, which we can nicely do with an enum in
+Rust:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[derive(Hash, PartialEq, Eq, Debug, Clone)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// Represents a single square on the board.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// # Representation
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// 1 is A1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// 2 is B1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// 64 is H8
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Square&lt;/span>(&lt;span style="color:#66d9ef">usize&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// Labels for every [`Square`] on the board.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[repr(usize)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[rustfmt::skip]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">enum&lt;/span> &lt;span style="color:#a6e22e">SquareLabels&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> None,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A1, B1, C1, D1, E1, F1, G1, H1,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A2, B2, C2, D2, E2, F2, G2, H2,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A3, B3, C3, D3, E3, F3, G3, H3,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A4, B4, C4, D4, E4, F4, G4, H4,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A5, B5, C5, D5, E5, F5, G5, H5,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A6, B6, C6, D6, E6, F6, G6, H6,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A7, B7, C7, D7, E7, F7, G7, H7,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> A8, B8, C8, D8, E8, F8, G8, H8,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And lastly we need to add the &lt;code>State&lt;/code> to the &lt;code>Position&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">/// A Position contains everything necessary to calculate moves and evaluate a position.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Position&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">/// The board for each side
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span> bb_sides: [BitBoard; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">/// BitBoards for all pieces and each side
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span> bb_pieces: [[BitBoard; &lt;span style="color:#ae81ff">6&lt;/span>]; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">/// State contains all relevant information for evaluating a position outside the pieces.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span> state: &lt;span style="color:#a6e22e">State&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="credits-and-further-reading">Credits and further reading&lt;/h2>
+&lt;p>Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p>
+&lt;ul>
+&lt;li>the &lt;a href="https://www.chessprogramming.org/Bitboards">Chess Programming Wiki&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://rustic-chess.org/">rustic project&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://github.com/peterellisjones/rust_move_gen">rust-move-gen&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://youtube.com/playlist?list=PLZ1QII7yudbc-Ky058TEaOstZHVbT-2hg">Chess Engine in C Series&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>About</title><link>https://nereuxofficial.github.io/about/</link><pubDate>Sun, 12 Sep 2021 22:08:05 +0200</pubDate><guid>https://nereuxofficial.github.io/about/</guid><description>About Me Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on Github
+Contact me Via Email: nereux@tuta.io</description><content>&lt;h2 id="about-me">About Me&lt;/h2>
+&lt;p>Hi there! I&amp;rsquo;m Benedikt, a backend developer from Germany. You can check out some of my projects on &lt;a href="https://github.com/Nereuxofficial">Github&lt;/a>&lt;/p>
+&lt;h3 id="contact-me">Contact me&lt;/h3>
+&lt;p>Via Email: &lt;a href="mailto:nereux@tuta.io">nereux@tuta.io&lt;/a>&lt;/p></content></item><item><title>Writing a BitBoard in Rust Pt. 1: The Basics</title><link>https://nereuxofficial.github.io/posts/bitboard-rust/</link><pubDate>Mon, 23 Aug 2021 22:19:48 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/bitboard-rust/</guid><description>Why BitBoards? BitBoards are used in most successful chess engines for the following reasons:
 Speed The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them. Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.
-Memory The second reason to use BitBoards is that they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description>
-      <content>&lt;h2 id=&#34;why-bitboards&#34;&gt;Why BitBoards?&lt;/h2&gt;
-&lt;p&gt;BitBoards are used in most successful chess engines for the following reasons:&lt;/p&gt;
-&lt;h3 id=&#34;speed&#34;&gt;Speed&lt;/h3&gt;
-&lt;p&gt;The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
-Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.&lt;/p&gt;
-&lt;h3 id=&#34;memory&#34;&gt;Memory&lt;/h3&gt;
-&lt;p&gt;The second reason to use BitBoards is that they are the most efficient way to store a board,
-which becomes relevant for the search in chess engines, since many boards are in memory during search.&lt;/p&gt;
-&lt;p&gt;But if you just want to make a chess browser game where memory or speed is not of great concern you really don&amp;rsquo;t need BitBoards.&lt;/p&gt;
-&lt;h2 id=&#34;explanation&#34;&gt;Explanation&lt;/h2&gt;
-&lt;p&gt;A BitBoard is essentially a 64-bit number with 1 bit for every square of a chess board.&lt;/p&gt;
-&lt;p&gt;Obviously we can only discern between piece and no piece here, so we have to have multiple BitBoards to store both teams
-and all 6 pieces.&lt;/p&gt;
-&lt;p&gt;So a position that looks like this:
-&lt;a href=&#34;https://lichess.org/editor/8/8/4r3/3k4/8/8/3K1Q2/8_w_-_-_0_1&#34;&gt;&lt;img src=&#34;./images/chess_position_1.jpg&#34; alt=&#34;8/8/4r3/3k4/8/8/3K1Q2/8 w - - 0 1&#34;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Would be split into the following BitBoards:&lt;/p&gt;
-&lt;p&gt;Note that a 0 is represented with nothing and a 1 is represented with a black dot and the dark and light squares are also all just bits but this makes it easier to read.&lt;/p&gt;
-&lt;h3 id=&#34;white-pieces&#34;&gt;White Pieces&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_pieces_0.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;black-pieces&#34;&gt;Black Pieces&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_pieces_1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;white-queens&#34;&gt;White Queens&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_white_queens.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;white-kings&#34;&gt;White Kings&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;./images/chess_position_1_white_kings.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;There would also be another BitBoard for Black Kings, Black Rooks and a bunch of empty BitBoards for the pieces which are not present on this board, but I think you get the concept.&lt;/p&gt;
-&lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
-&lt;p&gt;So creating a BitBoard is pretty easy:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;u64&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can derive a bunch of traits:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(PartialEq, Eq, PartialOrd, Clone, Copy, Debug, Default, Hash)]&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;u64&lt;/span&gt;);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can represent a chess board using BitBoards:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Position&lt;/span&gt;{
-    &lt;span style=&#34;color:#e6db74&#34;&gt;/// Board for each side
-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;    bb_sides: [BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
-    &lt;span style=&#34;color:#75715e&#34;&gt;// BitBoards for all pieces and each side
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    bb_pieces: [[BitBoard; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;]; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;],
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For efficiency reasons we only store the position and not the move order etc. since that is irrelevant for evaluation.&lt;/p&gt;
-&lt;p&gt;For ease of use we should also &amp;ldquo;label&amp;rdquo; the BitBoards something&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Sides&lt;/span&gt;;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Sides {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; WHITE: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BLACK: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Pieces&lt;/span&gt;;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Pieces{
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; PAWN: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; BISHOP: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; KNIGHT: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; ROOK: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; QUEEN: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; KING: &lt;span style=&#34;color:#66d9ef&#34;&gt;usize&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now  we can access a specific BitBoard in a way that is easy to read:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; white_queens: &lt;span style=&#34;color:#a6e22e&#34;&gt;BitBoard&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; position.bb_pieces[Sides::WHITE][Pieces::QUEEN]; 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post
-we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.).&lt;/p&gt;
-&lt;p&gt;If you have read this far, thank you for your patience.&lt;/p&gt;
-&lt;p&gt;And of course you can check out the entire &lt;a href=&#34;https://github.com/Nereuxofficial/BitBoard&#34;&gt;source code&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;credits-and-further-reading&#34;&gt;Credits and further reading&lt;/h2&gt;
-&lt;p&gt;Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;the &lt;a href=&#34;https://www.chessprogramming.org/Bitboards&#34;&gt;Chess Programming Wiki&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;the &lt;a href=&#34;https://rustic-chess.org/&#34;&gt;rustic project&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;the &lt;a href=&#34;https://github.com/peterellisjones/rust_move_gen&#34;&gt;rust-move-gen&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>Cargo Plugins</title>
-      <link>https://nereuxofficial.github.io/posts/cargo-plugins/</link>
-      <pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate>
-      
-      <guid>https://nereuxofficial.github.io/posts/cargo-plugins/</guid>
-      <description>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):
+Memory The second reason to use BitBoards is that they are the most efficient way to store a board, which becomes relevant for the search in chess engines, since many boards are in memory during search.</description><content>&lt;h2 id="why-bitboards">Why BitBoards?&lt;/h2>
+&lt;p>BitBoards are used in most successful chess engines for the following reasons:&lt;/p>
+&lt;h3 id="speed">Speed&lt;/h3>
+&lt;p>The biggest reason to use BitBoards is speed. That&amp;rsquo;s why all major chess engines use them.
+Since they only use one instruction per operation on 64-bit CPUs they are naturally the fastest way to make moves.&lt;/p>
+&lt;h3 id="memory">Memory&lt;/h3>
+&lt;p>The second reason to use BitBoards is that they are the most efficient way to store a board,
+which becomes relevant for the search in chess engines, since many boards are in memory during search.&lt;/p>
+&lt;p>But if you just want to make a chess browser game where memory or speed is not of great concern you really don&amp;rsquo;t need BitBoards.&lt;/p>
+&lt;h2 id="explanation">Explanation&lt;/h2>
+&lt;p>A BitBoard is essentially a 64-bit number with 1 bit for every square of a chess board.&lt;/p>
+&lt;p>Obviously we can only discern between piece and no piece here, so we have to have multiple BitBoards to store both teams
+and all 6 pieces.&lt;/p>
+&lt;p>So a position that looks like this:
+&lt;a href="https://lichess.org/editor/8/8/4r3/3k4/8/8/3K1Q2/8_w_-_-_0_1">&lt;img src="./images/chess_position_1.jpg" alt="8/8/4r3/3k4/8/8/3K1Q2/8 w - - 0 1">&lt;/a>&lt;/p>
+&lt;p>Would be split into the following BitBoards:&lt;/p>
+&lt;p>Note that a 0 is represented with nothing and a 1 is represented with a black dot and the dark and light squares are also all just bits but this makes it easier to read.&lt;/p>
+&lt;h3 id="white-pieces">White Pieces&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_pieces_0.png" alt="">&lt;/p>
+&lt;h3 id="black-pieces">Black Pieces&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_pieces_1.png" alt="">&lt;/p>
+&lt;h3 id="white-queens">White Queens&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_white_queens.png" alt="">&lt;/p>
+&lt;h3 id="white-kings">White Kings&lt;/h3>
+&lt;p>&lt;img src="./images/chess_position_1_white_kings.jpg" alt="">&lt;/p>
+&lt;p>There would also be another BitBoard for Black Kings, Black Rooks and a bunch of empty BitBoards for the pieces which are not present on this board, but I think you get the concept.&lt;/p>
+&lt;h2 id="implementation">Implementation&lt;/h2>
+&lt;p>So creating a BitBoard is pretty easy:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">BitBoard&lt;/span>(&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">u64&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can derive a bunch of traits:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[derive(PartialEq, Eq, PartialOrd, Clone, Copy, Debug, Default, Hash)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">BitBoard&lt;/span>(&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">u64&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can represent a chess board using BitBoards:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[derive(Debug, Clone, Hash, PartialEq, Eq)]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Position&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">/// Board for each side
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&lt;/span> bb_sides: [BitBoard; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// BitBoards for all pieces and each side
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> bb_pieces: [[BitBoard; &lt;span style="color:#ae81ff">6&lt;/span>]; &lt;span style="color:#ae81ff">2&lt;/span>],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>For efficiency reasons we only store the position and not the move order etc. since that is irrelevant for evaluation.&lt;/p>
+&lt;p>For ease of use we should also &amp;ldquo;label&amp;rdquo; the BitBoards something&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Sides&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Sides {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> WHITE: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BLACK: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Pieces&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Pieces{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> PAWN: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> BISHOP: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> KNIGHT: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> ROOK: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> QUEEN: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">4&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> KING: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">5&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we can access a specific BitBoard in a way that is easy to read:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> white_queens: &lt;span style="color:#a6e22e">BitBoard&lt;/span> &lt;span style="color:#f92672">=&lt;/span> position.bb_pieces[Sides::WHITE][Pieces::QUEEN];
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>This is nice, but only having BitBoard to represent a position is not very useful, so in the next blog post
+we will explore how to implement the State(Like En Passant, Side to Move, Half Moves etc.).&lt;/p>
+&lt;p>If you have read this far, thank you for your patience.&lt;/p>
+&lt;p>And of course you can check out the entire &lt;a href="https://github.com/Nereuxofficial/BitBoard">source code&lt;/a>.&lt;/p>
+&lt;h2 id="credits-and-further-reading">Credits and further reading&lt;/h2>
+&lt;p>Many articles and projects have helped me in the writing of this Blog Post, notably:&lt;/p>
+&lt;ul>
+&lt;li>the &lt;a href="https://www.chessprogramming.org/Bitboards">Chess Programming Wiki&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://rustic-chess.org/">rustic project&lt;/a>&lt;/li>
+&lt;li>the &lt;a href="https://github.com/peterellisjones/rust_move_gen">rust-move-gen&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>Cargo Plugins</title><link>https://nereuxofficial.github.io/posts/cargo-plugins/</link><pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/cargo-plugins/</guid><description>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):
 1. clippy Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common mistakes that can be found in Rust code.
 For example in this code:
-fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increase_vec(vector: &amp;amp;Vec&amp;lt;u32&amp;gt;) -&amp;gt; Vec&amp;lt;u32&amp;gt; { vector.</description>
-      <content>&lt;p&gt;Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p&gt;
-&lt;h2 id=&#34;1-clippyhttpsgithubcomrust-langrust-clippy&#34;&gt;1. &lt;a href=&#34;https://github.com/rust-lang/rust-clippy&#34;&gt;clippy&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common
-mistakes that can be found in Rust code.&lt;/p&gt;
-&lt;p&gt;For example in this code:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; vec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; vec&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;];
-    increase_vec(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;vec);
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;increase_vec&lt;/span&gt;(vector: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;Vec&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;u32&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Vec&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;u32&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
-    vector.iter().map(&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;v&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; v &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;).collect()
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The default compiler gives no warnings at all. However, using &lt;code&gt;cargo clippy&lt;/code&gt; in the projects&#39; directory gives us the
+fn main() { let vec = vec![1, 2, 3, 4]; increase_vec(&amp;amp;vec); } fn increase_vec(vector: &amp;amp;Vec&amp;lt;u32&amp;gt;) -&amp;gt; Vec&amp;lt;u32&amp;gt; { vector.</description><content>&lt;p>Here are the 5 cargo plugins I use the most(Keep in mind these depend on the use case):&lt;/p>
+&lt;h2 id="1-clippyhttpsgithubcomrust-langrust-clippy">1. &lt;a href="https://github.com/rust-lang/rust-clippy">clippy&lt;/a>&lt;/h2>
+&lt;p>Clippy is by far the most useful linter, although it gives some false positives it is generally very useful for common
+mistakes that can be found in Rust code.&lt;/p>
+&lt;p>For example in this code:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> vec &lt;span style="color:#f92672">=&lt;/span> vec![&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> increase_vec(&lt;span style="color:#f92672">&amp;amp;&lt;/span>vec);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">increase_vec&lt;/span>(vector: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>) -&amp;gt; Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u32&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vector.iter().map(&lt;span style="color:#f92672">|&lt;/span>v&lt;span style="color:#f92672">|&lt;/span> v &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>).collect()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The default compiler gives no warnings at all. However, using &lt;code>cargo clippy&lt;/code> in the projects&amp;rsquo; directory gives us the
 following tip:
-&lt;a href=&#34;https://rust-lang.github.io/rust-clippy/master/index.html#ptr_arg&#34;&gt;&lt;img src=&#34;./images/clippy_output.png&#34; alt=&#34;Clippy Output&#34;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;So we can replace the vector with a reference to an array which is faster since it uses one reference less.&lt;/p&gt;
-&lt;p&gt;Installing Clippy is very easy:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;rustup update
-rustup component add clippy
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we can run it using: &lt;code&gt;cargo clippy&lt;/code&gt;&lt;/p&gt;
-&lt;h2 id=&#34;2-cargo-checkmatehttpsgithubcomnathan-at-leastcargo-checkmate&#34;&gt;2. &lt;a href=&#34;https://github.com/nathan-at-least/cargo-checkmate&#34;&gt;cargo-checkmate&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;This plugin bundles a bunch of other plugins together.
-It first performs a &lt;code&gt;cargo check&lt;/code&gt;, compares the current formatting with the one of &lt;code&gt;cargo fmt&lt;/code&gt;, checks if
-&lt;code&gt;cargo build&lt;/code&gt; passes, checks if tests pass, then checks if the docs compile and lastly runs &lt;code&gt;cargo audit&lt;/code&gt; to check for
-vulnerabilities in dependencies.&lt;/p&gt;
-&lt;p&gt;An output will probably look something like this:
-&lt;a href=&#34;https://github.com/nathan-at-least/cargo-checkmate&#34;&gt;&lt;img src=&#34;./images/checkmate-output.jpg&#34; alt=&#34;Checkmate Output&#34;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;You can install it via:
-&lt;code&gt;cargo install cargo-checkmate&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;And to use it run:
-&lt;code&gt;cargo checkmate&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;And to execute it on every commit execute:
-&lt;code&gt;cargo checkmate git-hook install&lt;/code&gt;
-in the project folder.&lt;/p&gt;
-&lt;h2 id=&#34;3-cargo-flamegraphhttpslibrscratesflamegraph&#34;&gt;3. &lt;a href=&#34;https://lib.rs/crates/flamegraph&#34;&gt;cargo flamegraph&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;Cargo flamegraph generates a so-called &amp;ldquo;flamegraph&amp;rdquo; of your program. It generates a graph which shows where execution
+&lt;a href="https://rust-lang.github.io/rust-clippy/master/index.html#ptr_arg">&lt;img src="./images/clippy_output.png" alt="Clippy Output">&lt;/a>&lt;/p>
+&lt;p>So we can replace the vector with a reference to an array which is faster since it uses one reference less.&lt;/p>
+&lt;p>Installing Clippy is very easy:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>rustup update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rustup component add clippy
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And we can run it using: &lt;code>cargo clippy&lt;/code>&lt;/p>
+&lt;h2 id="2-cargo-checkmatehttpsgithubcomnathan-at-leastcargo-checkmate">2. &lt;a href="https://github.com/nathan-at-least/cargo-checkmate">cargo-checkmate&lt;/a>&lt;/h2>
+&lt;p>This plugin bundles a bunch of other plugins together.
+It first performs a &lt;code>cargo check&lt;/code>, compares the current formatting with the one of &lt;code>cargo fmt&lt;/code>, checks if
+&lt;code>cargo build&lt;/code> passes, checks if tests pass, then checks if the docs compile and lastly runs &lt;code>cargo audit&lt;/code> to check for
+vulnerabilities in dependencies.&lt;/p>
+&lt;p>An output will probably look something like this:
+&lt;a href="https://github.com/nathan-at-least/cargo-checkmate">&lt;img src="./images/checkmate-output.jpg" alt="Checkmate Output">&lt;/a>&lt;/p>
+&lt;p>You can install it via:
+&lt;code>cargo install cargo-checkmate&lt;/code>&lt;/p>
+&lt;p>And to use it run:
+&lt;code>cargo checkmate&lt;/code>&lt;/p>
+&lt;p>And to execute it on every commit execute:
+&lt;code>cargo checkmate git-hook install&lt;/code>
+in the project folder.&lt;/p>
+&lt;h2 id="3-cargo-flamegraphhttpslibrscratesflamegraph">3. &lt;a href="https://lib.rs/crates/flamegraph">cargo flamegraph&lt;/a>&lt;/h2>
+&lt;p>Cargo flamegraph generates a so-called &amp;ldquo;flamegraph&amp;rdquo; of your program. It generates a graph which shows where execution
 time is being spent in your program. This way it can help you figure out what to optimize in order to get better
-performance out of your program.&lt;/p&gt;
-&lt;p&gt;By default, flamegraph will use the release output which is fine for most cases, however in order to get more
-information we can add&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-toml&#34; data-lang=&#34;toml&#34;&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;profile&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;release&lt;/span&gt;]
-&lt;span style=&#34;color:#a6e22e&#34;&gt;debug&lt;/span&gt; = &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;to our Cargo.toml.&lt;/p&gt;
-&lt;p&gt;To use it properly on Linux we either have to run it as root or lower &lt;code&gt;perf_event_paranoid&lt;/code&gt;(Which may not fit your security
-needs):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is what a graph looks like, from the example of &lt;a href=&#34;https://github.com/K4rakara/freshfetch&#34;&gt;freshfetch&lt;/a&gt;:
-&lt;a href=&#34;https://github.com/K4rakara/freshfetch&#34;&gt;&lt;img src=&#34;./images/flamegraph_freshfetch.svg&#34; alt=&#34;Checkmate Output&#34;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;4-honggfuzz-rshttpsgithubcomrust-fuzzhonggfuzz-rs&#34;&gt;4. &lt;a href=&#34;https://github.com/rust-fuzz/honggfuzz-rs&#34;&gt;honggfuzz-rs&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;Fuzzing has become very important in software security and stability nowadays. This fuzzer, developed by Google, is
-probably one of the best available.&lt;/p&gt;
-&lt;p&gt;We install it by using:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cargo install honggfuzz
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add it to project dependencies using:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-toml&#34; data-lang=&#34;toml&#34;&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;dependencies&lt;/span&gt;]
-&lt;span style=&#34;color:#a6e22e&#34;&gt;honggfuzz&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.5&amp;#34;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Create a target to fuzz:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extern&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;crate&lt;/span&gt; url;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;use&lt;/span&gt; honggfuzz::fuzz;
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(){
-    println(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Starting fuzzer...&amp;#34;&lt;/span&gt;);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;loop&lt;/span&gt;{
-        fuzz&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;data: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;u8&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; {
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; Ok(s) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; std::&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;::from_utf8(data) {
-                &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; _ &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; url::Url::parse(s);
-            }
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now if we run:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cargo hfuzz run TARGET &lt;span style=&#34;color:#75715e&#34;&gt;# TARGET is typically the crate name, but it depends&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see a terminal like this:
-&lt;a href=&#34;https://honggfuzz.dev/&#34;&gt;&lt;img src=&#34;./images/honggfuzz.png&#34; alt=&#34;Honggfuzz Output&#34;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;While it&amp;rsquo;s running we see a hfuzz_workspace directory, which has TARGET directory, where we can find
-the found unique crashes, along with a honggfuzz report, which contains details on how it crashed.&lt;/p&gt;
-&lt;h2 id=&#34;5-cargo-updatehttpsgithubcomnabijaczlewelicargo-update&#34;&gt;5. &lt;a href=&#34;https://github.com/nabijaczleweli/cargo-update&#34;&gt;cargo-update&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;This Plugin is used to update all the binaries we just installed.&lt;/p&gt;
-&lt;p&gt;Install it by using:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cargo install cargo-update
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And update binaries using:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cargo install-update -a
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It would probably also make sense to make it a Pacman hook(or something similar on other Linux distros).&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://gist.github.com/Nereuxofficial/3375a8c02a2e13a51ff24206f8fd6f46&#34;&gt;Here is mine&lt;/a&gt;, though you need to replace the
-[USER] with your username.&lt;/p&gt;
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;There are obviously many Plugins I haven&amp;rsquo;t mentioned that are very useful too, for example
-&lt;a href=&#34;https://github.com/bheisler/cargo-criterion&#34;&gt;cargo-criterion&lt;/a&gt;, which is useful for benchmarks or
-&lt;a href=&#34;https://github.com/kbknapp/cargo-outdated&#34;&gt;cargo-outdated&lt;/a&gt;, which helps you keep your dependencies up to date.&lt;/p&gt;
-&lt;p&gt;But I hope at least some of them were useful to you and made your workflow a bit easier.&lt;/p&gt;
-</content>
-    </item>
-    
-  </channel>
-</rss>
+performance out of your program.&lt;/p>
+&lt;p>By default, flamegraph will use the release output which is fine for most cases, however in order to get more
+information we can add&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">profile&lt;/span>.&lt;span style="color:#a6e22e">release&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">debug&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>to our Cargo.toml.&lt;/p>
+&lt;p>To use it properly on Linux we either have to run it as root or lower &lt;code>perf_event_paranoid&lt;/code>(Which may not fit your security
+needs):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is what a graph looks like, from the example of &lt;a href="https://github.com/K4rakara/freshfetch">freshfetch&lt;/a>:
+&lt;a href="https://github.com/K4rakara/freshfetch">&lt;img src="./images/flamegraph_freshfetch.svg" alt="Checkmate Output">&lt;/a>&lt;/p>
+&lt;h2 id="4-honggfuzz-rshttpsgithubcomrust-fuzzhonggfuzz-rs">4. &lt;a href="https://github.com/rust-fuzz/honggfuzz-rs">honggfuzz-rs&lt;/a>&lt;/h2>
+&lt;p>Fuzzing has become very important in software security and stability nowadays. This fuzzer, developed by Google, is
+probably one of the best available.&lt;/p>
+&lt;p>We install it by using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo install honggfuzz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add it to project dependencies using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">honggfuzz&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.5&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a target to fuzz:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">extern&lt;/span> &lt;span style="color:#66d9ef">crate&lt;/span> url;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">use&lt;/span> honggfuzz::fuzz;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println(&lt;span style="color:#e6db74">&amp;#34;Starting fuzzer...&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fuzz&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#f92672">|&lt;/span>data: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>[&lt;span style="color:#66d9ef">u8&lt;/span>]&lt;span style="color:#f92672">|&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#66d9ef">let&lt;/span> Ok(s) &lt;span style="color:#f92672">=&lt;/span> std::&lt;span style="color:#66d9ef">str&lt;/span>::from_utf8(data) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> _ &lt;span style="color:#f92672">=&lt;/span> url::Url::parse(s);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now if we run:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo hfuzz run TARGET &lt;span style="color:#75715e"># TARGET is typically the crate name, but it depends&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We see a terminal like this:
+&lt;a href="https://honggfuzz.dev/">&lt;img src="./images/honggfuzz.png" alt="Honggfuzz Output">&lt;/a>&lt;/p>
+&lt;p>While it&amp;rsquo;s running we see a hfuzz_workspace directory, which has TARGET directory, where we can find
+the found unique crashes, along with a honggfuzz report, which contains details on how it crashed.&lt;/p>
+&lt;h2 id="5-cargo-updatehttpsgithubcomnabijaczlewelicargo-update">5. &lt;a href="https://github.com/nabijaczleweli/cargo-update">cargo-update&lt;/a>&lt;/h2>
+&lt;p>This Plugin is used to update all the binaries we just installed.&lt;/p>
+&lt;p>Install it by using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo install cargo-update
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And update binaries using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo install-update -a
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It would probably also make sense to make it a Pacman hook(or something similar on other Linux distros).&lt;/p>
+&lt;p>&lt;a href="https://gist.github.com/Nereuxofficial/3375a8c02a2e13a51ff24206f8fd6f46">Here is mine&lt;/a>, though you need to replace the
+[USER] with your username.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>There are obviously many Plugins I haven&amp;rsquo;t mentioned that are very useful too, for example
+&lt;a href="https://github.com/bheisler/cargo-criterion">cargo-criterion&lt;/a>, which is useful for benchmarks or
+&lt;a href="https://github.com/kbknapp/cargo-outdated">cargo-outdated&lt;/a>, which helps you keep your dependencies up to date.&lt;/p>
+&lt;p>But I hope at least some of them were useful to you and made your workflow a bit easier.&lt;/p></content></item></channel></rss>
