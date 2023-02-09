@@ -1,4 +1,53 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/</link><description>Recent content on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 05 Mar 2022 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Making a Dino Light with the ESP32 and WS2812</title><link>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</guid><description>I found this on thingiverse and decided to make it, but with Rust and an ESP32.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/</link><description>Recent content on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 09 Oct 2022 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Rust extended operations</title><link>https://nereuxofficial.github.io/posts/rust_extended_operations/</link><pubDate>Sun, 09 Oct 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/rust_extended_operations/</guid><description>You may know the default Rust operations like +, - and so on. But there are more functions that may suit you better in rare cases. In the following I call the default operations the &amp;ldquo;normal&amp;rdquo; operations and the argument rhs(function(rhs)).
+Function returns notes normal T try Result&amp;lt;T&amp;gt; Computes self + rhs, returning an Error if an overflow occured checked Option&amp;lt;T&amp;gt; Computes self + rhs, returning None if an overflow occurred unchecked T Computes assuming an over/underflow cannot occur(Results in undefined behaviour upon overflow) saturating T Computes self + rhs, saturating at the numeric bounds instead of overflowing wrapping T &amp;ldquo;wraps&amp;rdquo; around the boundary, same as with modulo T::max overflowing T Overflows instead of panicking upon an overflow</description><content>&lt;p>You may know the default Rust operations like +, - and so on. But there are more functions that
+may suit you better in rare cases.
+In the following I call the default operations the &amp;ldquo;normal&amp;rdquo; operations and the argument &lt;code>rhs&lt;/code>(&lt;code>function(rhs)&lt;/code>).&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Function&lt;/th>
+&lt;th>returns&lt;/th>
+&lt;th>notes&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>normal&lt;/td>
+&lt;td>&lt;code>T&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>try&lt;/td>
+&lt;td>&lt;code>Result&amp;lt;T&amp;gt;&lt;/code>&lt;/td>
+&lt;td>&lt;em>Computes self + rhs, returning an Error if an overflow occured&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>checked&lt;/td>
+&lt;td>&lt;code>Option&amp;lt;T&amp;gt;&lt;/code>&lt;/td>
+&lt;td>&lt;em>Computes self + rhs, returning None if an overflow occurred&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>unchecked&lt;/td>
+&lt;td>&lt;code>T&lt;/code>&lt;/td>
+&lt;td>&lt;em>Computes assuming an over/underflow cannot occur(Results in undefined behaviour upon overflow)&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>saturating&lt;/td>
+&lt;td>&lt;code>T&lt;/code>&lt;/td>
+&lt;td>&lt;em>Computes self + rhs, saturating at the numeric bounds instead of overflowing&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>wrapping&lt;/td>
+&lt;td>&lt;code>T&lt;/code>&lt;/td>
+&lt;td>&lt;em>&amp;ldquo;wraps&amp;rdquo; around the boundary, same as with modulo T::max&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>overflowing&lt;/td>
+&lt;td>&lt;code>T&lt;/code>&lt;/td>
+&lt;td>&lt;em>Overflows instead of panicking upon an overflow&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></content></item><item><title>Making a Dino Light with the ESP32 and WS2812</title><link>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</guid><description>I found this on thingiverse and decided to make it, but with Rust and an ESP32.
 This is the final result: Hardware Part I&amp;rsquo;d recommend getting WS2812 strips with less than 144 Pixels/m since it&amp;rsquo;s really painful to solder with that density, especially when you have little experience with soldering like me. For the ESP32 I&amp;rsquo;d recommend the ESP32-C, since that chip has a RISC-V chip, which has better Rust support than the Xtensa based boards.</description><content>&lt;p>I found &lt;a href="https://www.thingiverse.com/thing:5220507/">this&lt;/a> on thingiverse and
 decided to make it, but with Rust and an ESP32.&lt;/p>
 &lt;p>This is the final result:
@@ -14,6 +63,7 @@ Pin to the GND Pin of the LEDs. As a data Pin, take a look at the Pin-out diagra
 In my case the GPIO15 should do nicely, since it&amp;rsquo;s not used for internal flashing and works nicely
 with SPI.&lt;/p>
 &lt;h2 id="software-part">Software Part&lt;/h2>
+&lt;p>THIS ENTIRE SECTION IS NOT NECESSARY ANMORE. You can now use &lt;a href="https://github.com/esp-rs/espup">espup&lt;/a>, which sets up everything needed.&lt;/p>
 &lt;h3 id="setting-up-the-toolchain-and-compiler">Setting up the toolchain and compiler&lt;/h3>
 &lt;p>This has been really painful for me to set up, and I hope you can avoid some frustration
 by following this post.&lt;/p>

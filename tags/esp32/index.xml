@@ -14,6 +14,7 @@ Pin to the GND Pin of the LEDs. As a data Pin, take a look at the Pin-out diagra
 In my case the GPIO15 should do nicely, since it&amp;rsquo;s not used for internal flashing and works nicely
 with SPI.&lt;/p>
 &lt;h2 id="software-part">Software Part&lt;/h2>
+&lt;p>THIS ENTIRE SECTION IS NOT NECESSARY ANMORE. You can now use &lt;a href="https://github.com/esp-rs/espup">espup&lt;/a>, which sets up everything needed.&lt;/p>
 &lt;h3 id="setting-up-the-toolchain-and-compiler">Setting up the toolchain and compiler&lt;/h3>
 &lt;p>This has been really painful for me to set up, and I hope you can avoid some frustration
 by following this post.&lt;/p>
