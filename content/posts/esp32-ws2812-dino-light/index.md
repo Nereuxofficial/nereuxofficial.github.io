@@ -31,6 +31,7 @@ In my case the GPIO15 should do nicely, since it's not used for internal flashin
 with SPI.
 
 ## Software Part
+THIS ENTIRE SECTION IS NOT NECESSARY ANMORE. You can now use [espup](https://github.com/esp-rs/espup), which sets up everything needed.
 
 ### Setting up the toolchain and compiler
 This has been really painful for me to set up, and I hope you can avoid some frustration
