@@ -1,1 +1,91 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tags on Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/tags/</link><description>Recent content in Tags on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 24 Jul 2022 14:51:48 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/index.xml" rel="self" type="application/rss+xml"/><item><title>embedded</title><link>https://nereuxofficial.github.io/tags/embedded/</link><pubDate>Sun, 24 Jul 2022 14:51:48 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/embedded/</guid><description/><content/></item><item><title>microcontrollers</title><link>https://nereuxofficial.github.io/tags/microcontrollers/</link><pubDate>Sun, 24 Jul 2022 14:51:48 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/microcontrollers/</guid><description/><content/></item><item><title>nRF52</title><link>https://nereuxofficial.github.io/tags/nrf52/</link><pubDate>Sun, 24 Jul 2022 14:51:48 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/nrf52/</guid><description/><content/></item><item><title>rust</title><link>https://nereuxofficial.github.io/tags/rust/</link><pubDate>Sun, 24 Jul 2022 14:51:48 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/rust/</guid><description/><content/></item><item><title>esp32</title><link>https://nereuxofficial.github.io/tags/esp32/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/esp32/</guid><description/><content/></item><item><title>ws2812</title><link>https://nereuxofficial.github.io/tags/ws2812/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/ws2812/</guid><description/><content/></item><item><title>bitboard</title><link>https://nereuxofficial.github.io/tags/bitboard/</link><pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/bitboard/</guid><description/><content/></item><item><title>chess</title><link>https://nereuxofficial.github.io/tags/chess/</link><pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/chess/</guid><description/><content/></item><item><title>cargo</title><link>https://nereuxofficial.github.io/tags/cargo/</link><pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/tags/cargo/</guid><description/><content/></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Nereuxofficials Blog</title>
+    <link>https://nereuxofficial.github.io/tags/</link>
+    <description>Recent content in Tags on Nereuxofficials Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 09 Oct 2022 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>programming</title>
+      <link>https://nereuxofficial.github.io/tags/programming/</link>
+      <pubDate>Sun, 09 Oct 2022 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/programming/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>rust</title>
+      <link>https://nereuxofficial.github.io/tags/rust/</link>
+      <pubDate>Sun, 09 Oct 2022 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/rust/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>embedded</title>
+      <link>https://nereuxofficial.github.io/tags/embedded/</link>
+      <pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/embedded/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>esp32</title>
+      <link>https://nereuxofficial.github.io/tags/esp32/</link>
+      <pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/esp32/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>ws2812</title>
+      <link>https://nereuxofficial.github.io/tags/ws2812/</link>
+      <pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/ws2812/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>bitboard</title>
+      <link>https://nereuxofficial.github.io/tags/bitboard/</link>
+      <pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/bitboard/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>chess</title>
+      <link>https://nereuxofficial.github.io/tags/chess/</link>
+      <pubDate>Tue, 14 Sep 2021 08:11:54 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/chess/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>cargo</title>
+      <link>https://nereuxofficial.github.io/tags/cargo/</link>
+      <pubDate>Thu, 12 Aug 2021 21:31:55 +0200</pubDate>
+      
+      <guid>https://nereuxofficial.github.io/tags/cargo/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+  </channel>
+</rss>
