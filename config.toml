@@ -46,7 +46,7 @@ paginate = 10
 [languages]
   [languages.en]
     languageName = "English"
-    title = "Nereuxofficials Blog"
+    title = "Nereuxofficials old Blog"
     # subtitle = "Inofficial Not-to-do-list"
     owner = "Nereuxofficial"
     keywords = ""
@@ -64,6 +64,10 @@ paginate = 10
       logoHomeLink = "/"
 
     [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "duckblog"
+        name = "New Blog"
+        url = "https://nereux.blog"
       [[languages.en.menu.main]]
         identifier = "about"
         name = "About"
