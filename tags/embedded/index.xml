@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>embedded on Nereuxofficials Blog</title><link>https://nereuxofficial.github.io/tags/embedded/</link><description>Recent content in embedded on Nereuxofficials Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 05 Mar 2022 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/embedded/index.xml" rel="self" type="application/rss+xml"/><item><title>Making a Dino Light with the ESP32 and WS2812</title><link>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</guid><description>I found this on thingiverse and decided to make it, but with Rust and an ESP32.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>embedded on Nereuxofficials old Blog</title><link>https://nereuxofficial.github.io/tags/embedded/</link><description>Recent content in embedded on Nereuxofficials old Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 05 Mar 2022 21:31:55 +0200</lastBuildDate><atom:link href="https://nereuxofficial.github.io/tags/embedded/index.xml" rel="self" type="application/rss+xml"/><item><title>Making a Dino Light with the ESP32 and WS2812</title><link>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</link><pubDate>Sat, 05 Mar 2022 21:31:55 +0200</pubDate><guid>https://nereuxofficial.github.io/posts/esp32-ws2812-dino-light/</guid><description>I found this on thingiverse and decided to make it, but with Rust and an ESP32.
 This is the final result: Hardware Part I&amp;rsquo;d recommend getting WS2812 strips with less than 144 Pixels/m since it&amp;rsquo;s really painful to solder with that density, especially when you have little experience with soldering like me. For the ESP32 I&amp;rsquo;d recommend the ESP32-C, since that chip has a RISC-V chip, which has better Rust support than the Xtensa based boards.</description><content>&lt;p>I found &lt;a href="https://www.thingiverse.com/thing:5220507/">this&lt;/a> on thingiverse and
 decided to make it, but with Rust and an ESP32.&lt;/p>
 &lt;p>This is the final result:
@@ -63,21 +63,21 @@ that the function will not return and this is also why we need the never ending 
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[entry]&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() -&amp;gt; &lt;span style="color:#f92672">!&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> dp &lt;span style="color:#f92672">=&lt;/span> target::Peripherals::take().unwrap();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> (_, dport_clock_control) &lt;span style="color:#f92672">=&lt;/span> dp.DPORT.split();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> (_, dport_clock_control) &lt;span style="color:#f92672">=&lt;/span> dp.&lt;span style="color:#66d9ef">DPORT&lt;/span>.split();
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> clkcntrl &lt;span style="color:#f92672">=&lt;/span> ClockControl::new(
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.RTCCNTL,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.APB_CTRL,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.&lt;span style="color:#66d9ef">RTCCNTL&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.&lt;span style="color:#66d9ef">APB_CTRL&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dport_clock_control,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> XTAL_FREQUENCY_AUTO,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">XTAL_FREQUENCY_AUTO&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap();
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> (clkcntrl_config, _) &lt;span style="color:#f92672">=&lt;/span> clkcntrl.freeze().unwrap();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> pins &lt;span style="color:#f92672">=&lt;/span> dp.GPIO.split();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> pins &lt;span style="color:#f92672">=&lt;/span> dp.&lt;span style="color:#66d9ef">GPIO&lt;/span>.split();
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> data_out &lt;span style="color:#f92672">=&lt;/span> pins.gpio15.into_push_pull_output();
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// We need SPI for the WS2812 library
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">let&lt;/span> spi: &lt;span style="color:#a6e22e">SPI&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>_, _, _, _&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> SPI::&lt;span style="color:#f92672">&amp;lt;&lt;/span>esp32::SPI2, _, _, _, _&lt;span style="color:#f92672">&amp;gt;&lt;/span>::new(
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.SPI2,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">let&lt;/span> spi: &lt;span style="color:#a6e22e">SPI&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>_, _, _, _&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">SPI&lt;/span>::&lt;span style="color:#f92672">&amp;lt;&lt;/span>esp32::&lt;span style="color:#66d9ef">SPI2&lt;/span>, _, _, _, _&lt;span style="color:#f92672">&amp;gt;&lt;/span>::new(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dp.&lt;span style="color:#66d9ef">SPI2&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> spi::Pins {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sclk: &lt;span style="color:#a6e22e">pins&lt;/span>.gpio14,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sdo: &lt;span style="color:#a6e22e">data_out&lt;/span>,
@@ -87,7 +87,7 @@ that the function will not return and this is also why we need the never ending 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> spi::config::Config {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> baudrate: &lt;span style="color:#ae81ff">3.&lt;/span>MHz().into(),
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> bit_order: &lt;span style="color:#a6e22e">spi&lt;/span>::config::BitOrder::MSBFirst,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data_mode: &lt;span style="color:#a6e22e">spi&lt;/span>::config::MODE_0,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data_mode: &lt;span style="color:#a6e22e">spi&lt;/span>::config::&lt;span style="color:#66d9ef">MODE_0&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clkcntrl_config,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
@@ -97,13 +97,13 @@ that the function will not return and this is also why we need the never ending 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now we create some structs to control the Strip easier:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">const&lt;/span> NUM_LEDS: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span>;
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#66d9ef">NUM_LEDS&lt;/span>: &lt;span style="color:#66d9ef">usize&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span>;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">LightData&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [RGB8; NUM_LEDS],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [&lt;span style="color:#66d9ef">RGB8&lt;/span>; &lt;span style="color:#66d9ef">NUM_LEDS&lt;/span>],
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Strip&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ws: &lt;span style="color:#a6e22e">Ws2812&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI2, Gpio14&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&lt;/span>, Gpio15&lt;span style="color:#f92672">&amp;lt;&lt;/span>Output&lt;span style="color:#f92672">&amp;lt;&lt;/span>PushPull&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>, Gpio25&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&amp;gt;&amp;gt;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ws: &lt;span style="color:#a6e22e">Ws2812&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">SPI&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">SPI2&lt;/span>, Gpio14&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&lt;/span>, Gpio15&lt;span style="color:#f92672">&amp;lt;&lt;/span>Output&lt;span style="color:#f92672">&amp;lt;&lt;/span>PushPull&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>, Gpio25&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&amp;gt;&amp;gt;&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data: &lt;span style="color:#a6e22e">LightData&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> brightness: &lt;span style="color:#66d9ef">u8&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
@@ -111,12 +111,12 @@ that the function will not return and this is also why we need the never ending 
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> LightData {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">empty&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [RGB8::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>); NUM_LEDS],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [&lt;span style="color:#66d9ef">RGB8&lt;/span>::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>); &lt;span style="color:#66d9ef">NUM_LEDS&lt;/span>],
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">write_to_strip&lt;/span>(
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>self,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">mut&lt;/span> Ws2812&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI&lt;span style="color:#f92672">&amp;lt;&lt;/span>SPI2, Gpio14&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&lt;/span>, Gpio15&lt;span style="color:#f92672">&amp;lt;&lt;/span>Output&lt;span style="color:#f92672">&amp;lt;&lt;/span>PushPull&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>, Gpio25&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&amp;gt;&amp;gt;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">mut&lt;/span> Ws2812&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">SPI&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">SPI2&lt;/span>, Gpio14&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&lt;/span>, Gpio15&lt;span style="color:#f92672">&amp;lt;&lt;/span>Output&lt;span style="color:#f92672">&amp;lt;&lt;/span>PushPull&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>, Gpio25&lt;span style="color:#f92672">&amp;lt;&lt;/span>Unknown&lt;span style="color:#f92672">&amp;gt;&amp;gt;&amp;gt;&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ) {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.write(self.leds.iter().cloned()).unwrap();
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
@@ -125,7 +125,7 @@ that the function will not return and this is also why we need the never ending 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.leds[index]
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">set_color_all&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">mut&lt;/span> self, color: &lt;span style="color:#a6e22e">RGB8&lt;/span>) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#f92672">..&lt;/span>NUM_LEDS {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#f92672">..&lt;/span>&lt;span style="color:#66d9ef">NUM_LEDS&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self.set_color(i, color);
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
@@ -145,7 +145,7 @@ that the function will not return and this is also why we need the never ending 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">impl&lt;/span> Default &lt;span style="color:#66d9ef">for&lt;/span> LightData {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">default&lt;/span>() -&amp;gt; &lt;span style="color:#a6e22e">Self&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Self {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [RGB8::new(STEPS, STEPS, STEPS); NUM_LEDS],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> leds: [&lt;span style="color:#66d9ef">RGB8&lt;/span>::new(&lt;span style="color:#66d9ef">STEPS&lt;/span>, &lt;span style="color:#66d9ef">STEPS&lt;/span>, &lt;span style="color:#66d9ef">STEPS&lt;/span>); &lt;span style="color:#66d9ef">NUM_LEDS&lt;/span>],
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
@@ -169,14 +169,14 @@ that the function will not return and this is also why we need the never ending 
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#66d9ef">mut&lt;/span> strip &lt;span style="color:#f92672">=&lt;/span> Strip {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ws,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data: &lt;span style="color:#a6e22e">LightData&lt;/span>::from_gradient(RGB8::new(&lt;span style="color:#ae81ff">40&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), RGB::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">40&lt;/span>)),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data: &lt;span style="color:#a6e22e">LightData&lt;/span>::from_gradient(&lt;span style="color:#66d9ef">RGB8&lt;/span>::new(&lt;span style="color:#ae81ff">40&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), &lt;span style="color:#66d9ef">RGB&lt;/span>::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">40&lt;/span>)),
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> brightness: &lt;span style="color:#ae81ff">10&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.set_solid(RGB8::new(&lt;span style="color:#ae81ff">25&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.set_solid(&lt;span style="color:#66d9ef">RGB8&lt;/span>::new(&lt;span style="color:#ae81ff">25&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>));
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> delay(&lt;span style="color:#ae81ff">40_000_000&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#f92672">..&lt;/span>NUM_LEDS {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.set_color(RGB8::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">25&lt;/span>), i);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> i &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#f92672">..&lt;/span>&lt;span style="color:#66d9ef">NUM_LEDS&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strip.set_color(&lt;span style="color:#66d9ef">RGB8&lt;/span>::new(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">25&lt;/span>), i);
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> delay(&lt;span style="color:#ae81ff">40_000_000&lt;/span>);
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
@@ -184,7 +184,7 @@ that the function will not return and this is also why we need the never ending 
 &lt;p>Lastly we need a &lt;code>#[panic_handler]&lt;/code>, this will suffice for this example:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[panic_handler]&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">panic&lt;/span>(info: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">PanicInfo&lt;/span>) -&amp;gt; &lt;span style="color:#f92672">!&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dprintln&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;\n\n*** {:?}&amp;#34;&lt;/span>, info);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dprintln!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\n\n&lt;/span>&lt;span style="color:#e6db74">*** {:?}&amp;#34;&lt;/span>, info);
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">loop&lt;/span> {}
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And now we can flash it via:&lt;/p>
